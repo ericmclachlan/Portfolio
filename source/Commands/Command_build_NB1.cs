@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
     internal class Command_build_NB1 : ICommand
     {
-        // Public Members
+        // Members
 
         public string CommandName { get { return "build_NB1"; } }
-
-        // Other Members
-
-        private ValueIdMapper<string> classToclassId = new ValueIdMapper<string>();
-        private ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
-
-        private List<FeatureVector> testVectors = null;
 
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Vector file in text format(cf.train.vectors.txt).")]
         public string training_data_file { get; set; }
@@ -36,21 +28,25 @@ namespace ericmclachlan.Portfolio
         [CommandParameter(Index = 5, Description = "The classification result on the training and test data (cf. sys1).")]
         public string sys_output { get; set; }
 
+        private ValueIdMapper<string> classToclassId = new ValueIdMapper<string>();
+        private ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
+        
 
-    // Methods
+        // Methods
 
         public void ExecuteCommand()
         {
             Func<int, int> transformationF = (i) => { return i > 0 ? 1 : 0; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(File.ReadAllText(training_data_file), featureToFeatureId, classToclassId, transformationF);
-            testVectors = FeatureVector.LoadFromSVMLight(File.ReadAllText(test_data_file), featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
+            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
             Classifier classifier = new NaiveBayesClassifier_MultivariateBernoulli(class_prior_delta, cond_prob_delta, trainingVectors, classToclassId.Count);
-            ProgramOutput.ReportAccuracy("Training", classifier.GetConfusionMatrix(classifier.TrainingVectors), classToclassId);
-            StringBuilder sb = new StringBuilder();
-            ProgramOutput.GenerateSysOutputForVectors("training data", classifier, classifier.TrainingVectors, classToclassId, sb);
-            ProgramOutput.GenerateSysOutputForVectors("test data", classifier, testVectors, classToclassId, sb);
-            File.WriteAllText(sys_output, sb.ToString());
-            ProgramOutput.ReportAccuracy("Test", classifier.GetConfusionMatrix(testVectors), classToclassId);
+
+            ConfusionMatrix confusionMatrix_training;
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, classifier.TrainingVectors, classToclassId, out confusionMatrix_training);
+            ProgramOutput.ReportAccuracy(confusionMatrix_training, classToclassId, sys_output);
+            ConfusionMatrix confusionMatrix_test;
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToclassId, out confusionMatrix_test);
+            ProgramOutput.ReportAccuracy(confusionMatrix_test, classToclassId, "Test");
         }
     }
 }

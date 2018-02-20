@@ -59,7 +59,7 @@ namespace ericmclachlan.Portfolio
 
         // Static Methods
 
-        public static new MaxEntPOSClassifier LoadFromModel(string text, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId)
+        public new static MaxEntPOSClassifier LoadModel(string text, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId)
         {
             List<double> lambda_c;
             List<FeatureVector> vectors;

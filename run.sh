@@ -9,27 +9,28 @@ echo "Examples directory: $exDir"
 # Hw6
 # ------
 
-beam_size[0]=0
-beam_size[1]=1
-beam_size[2]=2
-beam_size[3]=3
+N[0]=1
+N[1]=5
+N[2]=10
+N[3]=20
+N[4]=50
+N[5]=100
+N[6]=200
 
-topN[0]=1
-topN[1]=3
-topN[2]=5
-topN[3]=10
+maxN=6
 
-topK[0]=1
-topK[1]=5
-topK[2]=10
-topK[3]=100
-
-for index in 0 1 2  3; do
+for (( index=0; i <= $maxN; ++index )); do
 		
-	outputDir=output_${beam_size[$index]}_${topN[$index]}_${topK[$index]}
+	outputDir=output_${N[$index]}
 	mkdir -p $outputDir
-	
-	./beamsearch_maxent.sh	$exDir/sec19_21.txt $exDir/sec19_21.boundary $exDir/m1.txt $outputDir/sys_output "${beam_size[$index]}" "${topN[$index]}" "${topK[$index]}" > $outputDir/acc
-	cat $outputDir/acc
+
+	./TBL_train.sh    $exDir/train2.txt $outputDir/model_file 1
+	./TBL_classify.sh $exDir/train2.txt $outputDir/model_file $outputDir/sys_output_train $N[$index] > $outputDir/acc_train
+	./TBL_classify.sh $exDir/test2.txt  $outputDir/model_file $outputDir/sys_output_test  $N[$index] > $outputDir/acc_test
 	
 done
+
+# Prepare files for submission:
+cp output_20/sys_output_20 .
+cp output_50/sys_output_50 .
+cp output_100/sys_output_100 .

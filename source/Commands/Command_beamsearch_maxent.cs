@@ -61,7 +61,7 @@ namespace ericmclachlan.Portfolio
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
 
             // Read the classifier model:
-            classifier = MaxEntPOSClassifier.LoadFromModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
+            classifier = MaxEntPOSClassifier.LoadModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
             int trainingFeatureCount = featureToFeatureId.Count;
 
             // Read the vectors:
@@ -70,14 +70,14 @@ namespace ericmclachlan.Portfolio
             var testVectors = FeatureVector.FromModifiedSVMLight(File.ReadAllText(test_data), featureToFeatureId, classToClassId, transformationF, out instanceNames);
 
             // Generate sys_output:
-            int[,] confusionMatrix;
+            ConfusionMatrix confusionMatrix;
             File.WriteAllText(sys_output, GenerateSysOutput(instanceNames, testVectors, sentenceLengths, out confusionMatrix));
 
             // Generate acc:
             Console.WriteLine($"class_num={classToClassId.Count} feat_num={trainingFeatureCount}");
             Console.WriteLine();
             Console.WriteLine();
-            ProgramOutput.ReportAccuracy("Test", confusionMatrix, classToClassId);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
         }
 
 
@@ -100,7 +100,7 @@ namespace ericmclachlan.Portfolio
             IList<string> instanceNames
             , IList<FeatureVector> testVectors
             , int[] sentenceLengths
-            , out int[,] confusionMatrix
+            , out ConfusionMatrix confusionMatrix
             )
         {
             StringBuilder sb = new StringBuilder();
@@ -123,7 +123,7 @@ namespace ericmclachlan.Portfolio
 
             // Iterate over each of the sentences.
             v_i = 0;
-            confusionMatrix = new int[classToClassId.Count, classToClassId.Count];
+            confusionMatrix = new ConfusionMatrix(classToClassId.Count);
             for (int s_i = 0; s_i < sentenceLengths.Length; s_i++)
             {
                 int[] sysClasses;
@@ -134,7 +134,7 @@ namespace ericmclachlan.Portfolio
                 for (int w_i = 0; w_i < sentenceLengths[s_i]; w_i++)
                 {
                     string instanceName = instanceNames[w_i];
-                    int goldClassId = sentences[s_i][w_i].ClassId;
+                    int goldClassId = sentences[s_i][w_i].GoldClass;
                     string goldClass = classToClassId[goldClassId];
 
                     // sysClass is the tag c for the word w according to the best tag sequence found above.

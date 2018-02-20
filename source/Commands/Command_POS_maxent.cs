@@ -61,7 +61,7 @@ namespace ericmclachlan.Portfolio
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
 
             // Read the classifier model:
-            classifier = MaxEntPOSClassifier.LoadFromModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
+            classifier = MaxEntPOSClassifier.LoadModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
 
             // Read the vectors:
             List<string> instanceNames;
@@ -69,13 +69,13 @@ namespace ericmclachlan.Portfolio
             var testVectors = FeatureVector.FromModifiedSVMLight(File.ReadAllText(test_data), featureToFeatureId, classToClassId, transformationF, out instanceNames);
             
             // Generate sys_output:
-            File.WriteAllText(sys_output, GenerateSysOutput(instanceNames, testVectors, sentenceLengths));
+            var confusionMatrix = GenerateSysOutput(sys_output, instanceNames, testVectors, sentenceLengths);
 
             // Generate acc:
             Console.WriteLine($"class_num={classToClassId.Count} feat_num={featureToFeatureId.Count}");
             Console.WriteLine();
             Console.WriteLine();
-            ProgramOutput.ReportAccuracy("Test", classifier.GetConfusionMatrix(testVectors), classToClassId);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
         }
 
 
@@ -94,8 +94,9 @@ namespace ericmclachlan.Portfolio
             return sentenceLengths;
         }
 
-        private string GenerateSysOutput(
-            IList<string> instanceNames
+        private ConfusionMatrix GenerateSysOutput(
+            string sys_output
+            , IList<string> instanceNames
             , IList<FeatureVector> testVectors
             , int[] sentenceLengths
             )
@@ -119,6 +120,7 @@ namespace ericmclachlan.Portfolio
             Debug.Assert(v_i == testVectors.Count);
 
             // Iterate over each of the sentences.
+            ConfusionMatrix confusionMatrix = new ConfusionMatrix(classToClassId.Count);
             for (int s_i = 0; s_i < sentenceLengths.Length; s_i++)
             {
                 double[] prob_c_w;
@@ -129,17 +131,21 @@ namespace ericmclachlan.Portfolio
                 for (int w_i = 0; w_i < sentenceLengths[s_i]; w_i++)
                 {
                     string instanceName = instanceNames[w_i];
-                    string goldClass = classToClassId[sentences[s_i][w_i].ClassId];
+                    int goldClass = sentences[s_i][w_i].GoldClass;
+                    string goldClassName = classToClassId[goldClass];
 
                     // sysClass is the tag c for the word w according to the best tag sequence found above.
-                    string sysClass = classToClassId[c_w[w_i]];
+                    int sysClass = c_w[w_i];
+                    string sysClassName = classToClassId[sysClass];
+                    confusionMatrix[goldClass, sysClass]++;
                     // prob is the probability of the tag c given the word w FOR the given best tag sequence.
                     double prob = prob_c_w[w_i];
 
-                    sb.AppendFormat($"{instanceName} {goldClass} {sysClass} {prob:0.00000}{Environment.NewLine}");
+                    sb.AppendFormat($"{instanceName} {goldClassName} {sysClassName} {prob:0.00000}{Environment.NewLine}");
                 }
             }
-            return sb.ToString();
+            File.WriteAllText(sys_output, sb.ToString());
+            return confusionMatrix;
         }
 
         internal void GetBestTagSequence(IList<FeatureVector> words, out double[] prob_c_w, out int[] c_w)

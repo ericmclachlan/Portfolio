@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
@@ -27,17 +26,14 @@ namespace ericmclachlan.Portfolio
             ValueIdMapper<string> classToclassId;
             ValueIdMapper<string> featureToFeatureId;
 
-            string text = File.ReadAllText(model_file);
-            Classifier classifier = MaxEntClassifier.LoadFromModel(text, out classToclassId, out featureToFeatureId);
+            Classifier classifier = MaxEntClassifier.LoadModel(model_file, out classToclassId, out featureToFeatureId);
 
             Func<int, int> transformationF = (i) => { return 1; };
-            text = File.ReadAllText(test_data_file);
-            var testVectors = FeatureVector.LoadFromSVMLight(text, featureToFeatureId, classToclassId, transformationF);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
 
-            StringBuilder sb = new StringBuilder();
-            ProgramOutput.GenerateSysOutputForVectors("test data", classifier, testVectors, classToclassId, sb);
-            File.WriteAllText(sys_output, sb.ToString());
-            ProgramOutput.ReportAccuracy("Test", classifier.GetConfusionMatrix(testVectors), classToclassId);
+            ConfusionMatrix confusionMatrix;
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Test");
         }
     }
 }

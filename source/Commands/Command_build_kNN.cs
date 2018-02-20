@@ -1,22 +1,14 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
     /// <summary>Provides a commandline interface to the kNN Classifier.</summary>
     internal class Command_build_kNN : ICommand
     {
-        // Public Members
+        // Members
 
         public string CommandName { get { return "build_kNN"; } }
-
-        internal ValueIdMapper<string> classToclassId = new ValueIdMapper<string>();
-        internal ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
-
-
-        // Other Members
-
 
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Vector file in text format(cf.train.vectors.txt).")]
         public string training_data_file { get; set; }
@@ -38,16 +30,19 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
+            var classToclassId = new ValueIdMapper<string>();
+            var featureToFeatureId = new ValueIdMapper<string>();
+
             Func<int, int> transformationF = (i) => { return i; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(File.ReadAllText(training_data_file), featureToFeatureId, classToclassId, transformationF);
-            var testVectors = FeatureVector.LoadFromSVMLight(File.ReadAllText(test_data_file), featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
             Classifier classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToclassId.Count);
-            ProgramOutput.ReportAccuracy("Training", classifier.GetConfusionMatrix(classifier.TrainingVectors), classToclassId);
-            StringBuilder sb = new StringBuilder();
-            ProgramOutput.GenerateSysOutputForVectors("training data", classifier, classifier.TrainingVectors, classToclassId, sb);
-            ProgramOutput.GenerateSysOutputForVectors("test data", classifier, testVectors, classToclassId, sb);
-            File.WriteAllText(sys_output, sb.ToString());
-            ProgramOutput.ReportAccuracy("Test", classifier.GetConfusionMatrix(testVectors), classToclassId);
+
+            ConfusionMatrix confusionMatrix;
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, classifier.TrainingVectors, classToclassId, out confusionMatrix);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Training");
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Test");
         }
     }
 }

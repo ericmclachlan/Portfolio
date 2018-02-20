@@ -62,9 +62,9 @@ namespace ericmclachlan.Portfolio
                 {
                     int f_i = v.UsedFeatures[w_i];
                     //Debug.Assert(v.AllFeatures[f_i] != 0);
-                    count_f_c[f_i, v.ClassId] += v.AllFeatures[f_i];
+                    count_f_c[f_i, v.GoldClass] += v.AllFeatures[f_i];
                 }
-                count_c[v.ClassId]++;
+                count_c[v.GoldClass]++;
             }
 
             // Summarize the data to make calculations super-fast later.

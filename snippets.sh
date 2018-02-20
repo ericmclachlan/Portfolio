@@ -27,6 +27,11 @@ calc_model_exp ..\examples\train2.vectors.txt q1\m1.txt
 beamsearch_maxent ..\examples\ex\test.txt ..\examples\ex\boundary.txt ..\examples\m1.txt sys_output 2 5 10 > acc
 beamsearch_maxent ..\examples\sec19_21.txt ..\examples\sec19_21.boundary ..\examples\m1.txt sys_output 2 5 10 > acc
 
+# Hw7
+TBL_train	 ..\examples\train2.txt model_file 1
+TBL_classify ..\examples\train2.txt model_file sys_output 1 > acc_train
+TBL_classify ..\examples\test2.txt  model_file sys_output 1 > acc_test
+
 Copying Files
 -------------
 

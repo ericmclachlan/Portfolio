@@ -115,17 +115,17 @@ namespace ericmclachlan.Portfolio
                 // AND split the data BY FEATURE.
                 foreach (FeatureVector vector in vectors)
                 {
-                    vectors_byClass[vector.ClassId].Add(vector);
+                    vectors_byClass[vector.GoldClass].Add(vector);
                     //TODO: It would be nice to make this less binary-feature dependent.
                     if (vector.AllFeatures[featureIndex] > 0)
                     {
                         split[1].Add(vector);
-                        distribution_byClass[vector.ClassId][1]++;
+                        distribution_byClass[vector.GoldClass][1]++;
                     }
                     else
                     {
                         split[0].Add(vector);
-                        distribution_byClass[vector.ClassId][0]++;
+                        distribution_byClass[vector.GoldClass][0]++;
                     }
                 }
                 double informationGain = StatisticsHelper.CalculateInformationGain(distribution_byClass);
@@ -208,6 +208,7 @@ namespace ericmclachlan.Portfolio
 
             internal string GetModelAsText(ValueIdMapper<string> classToClassId, ValueIdMapper<string> wordToWordId)
             {
+                /// TODO: Move a serialization method to the classifier class.
                 StringBuilder sb = new StringBuilder();
                 Serialize_Recursive(sb, classToClassId, wordToWordId, 0);
                 return sb.ToString();
@@ -255,7 +256,7 @@ namespace ericmclachlan.Portfolio
             public double[] GetDistributionByClass()
             {
                 var results = from v in FeatureVectors
-                              group v by v.ClassId into g
+                              group v by v.GoldClass into g
                               orderby g.Key
                               select new { ClassId = g.Key, Count = g.Count() };
                 double[] distribution = new double[NoOfClasses];
