@@ -113,7 +113,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
-    <Compile Include="DataStructures\TextIdMapper.cs" />
+    <Compile Include="DataStructures\ValueIdMapper.cs" />
     <Compile Include="Helpers\TextHelper.cs" />
     <Compile Include="DataStructures\FeatureVector.cs" />
   </ItemGroup>
