@@ -23,9 +23,8 @@ namespace ericmclachlan.Portfolio
         public void ExecuteCommand()
         {
             // Load the training file.
-            string text = File.ReadAllText(training_data_file);
             Func<int, int> transformationF = (i) => { return 1; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(text, featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
 
             double[,] observation, expectation;
             CalculateObservationAndEmpiricalExpectation(trainingVectors, out observation, out expectation);
@@ -63,7 +62,7 @@ namespace ericmclachlan.Portfolio
             {
                 for (int u_i = 0; u_i < trainingVectors[v_i].UsedFeatures.Length; u_i++)
                 {
-                    int c_i = trainingVectors[v_i].ClassId;
+                    int c_i = trainingVectors[v_i].GoldClass;
                     int f_i = trainingVectors[v_i].UsedFeatures[u_i];
                     Debug.Assert(trainingVectors[v_i].AllFeatures[f_i] == 1);
                     double featureValue = trainingVectors[v_i].AllFeatures[f_i];

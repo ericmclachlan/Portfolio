@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -54,8 +55,9 @@ namespace ericmclachlan.Portfolio
 
         // Static Methods
 
-        public static MaxEntClassifier LoadFromModel(string text, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId)
+        public static MaxEntClassifier LoadModel(string model_file, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId)
         {
+            string text = File.ReadAllText(model_file);
             List<double> lambda_c;
             List<FeatureVector> vectors;
             LoadModel(text, out classToClassId, out featureToFeatureId, out lambda_c, out vectors);

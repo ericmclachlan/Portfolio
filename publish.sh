@@ -6,8 +6,6 @@ echo "Examples directory: $exDir"
 # Removes files:
 rm -fv snippets.sh
 
-cp output_2_5_10/sys_output .
-
 # Zip it!
 tar -czf hw.tar.gz .
 

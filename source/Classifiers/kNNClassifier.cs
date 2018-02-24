@@ -68,11 +68,11 @@ namespace ericmclachlan.Portfolio
                 if (nearestNeighbors.Count == 0 || distance < nearestNeighbors[0].Value)
                 {
                     nearestNeighbors.Insert(0, new IdValuePair<double>(v_i, distance));
-                    votes_c[TrainingVectors[v_i].ClassId]++;
+                    votes_c[TrainingVectors[v_i].GoldClass]++;
                     // If we have too many neighbors, then remove the furthest one.
                     if (nearestNeighbors.Count > K)
                     {
-                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].ClassId]--;
+                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].GoldClass]--;
                         nearestNeighbors.RemoveAt(nearestNeighbors.Count - 1);
                     }
                 }
@@ -83,12 +83,12 @@ namespace ericmclachlan.Portfolio
                     if (insert_b <= K)
                     {
                         nearestNeighbors.Insert(insert_b, newNeighbor);
-                        votes_c[TrainingVectors[v_i].ClassId]++;
+                        votes_c[TrainingVectors[v_i].GoldClass]++;
                     }
                     // If we have too many neighbors, then remove the furthest one.
                     if (nearestNeighbors.Count > K)
                     {
-                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].ClassId]--;
+                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].GoldClass]--;
                         nearestNeighbors.RemoveAt(nearestNeighbors.Count - 1);
                     }
                 }

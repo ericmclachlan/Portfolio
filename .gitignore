@@ -5,3 +5,7 @@
 /.vs
 /source/bin/x64/Debug
 /source/obj/x64/Debug
+/source/obj/Release
+/source/obj/x64
+/acc_train
+/model_file

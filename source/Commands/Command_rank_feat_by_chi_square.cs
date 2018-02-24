@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ericmclachlan.Portfolio
@@ -21,12 +23,22 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-
             var svmLight_data = Console.In.ReadToEnd();
+
             Console.Error.WriteLine("{0} characters of input received.", svmLight_data.Length);
 
             Func<int, int> transformationF = (i) => { return i > 0 ? 1 : 0; };
-            var vectors = FeatureVector.LoadFromSVMLight(svmLight_data, featureToFeatureId, classToClassId, transformationF);
+            string tempFile = Path.GetTempFileName();
+            List<FeatureVector> vectors;
+            try
+            {
+                File.WriteAllText(tempFile, svmLight_data);
+                vectors = FeatureVector.LoadFromSVMLight(tempFile, featureToFeatureId, classToClassId, transformationF);
+            }
+            finally
+            {
+                File.Delete(tempFile);
+            }
             Debug.Assert(vectors.Count > 0);
 
             IdValuePair<double>[] chiSquare = new IdValuePair<double>[featureToFeatureId.Count];
@@ -39,7 +51,7 @@ namespace ericmclachlan.Portfolio
                 for (int v_i = 0; v_i < vectors.Count; v_i++)
                 {
                     FeatureVector v = vectors[v_i];
-                    contingencyTable_f[f_i][v.ClassId, (int)v.AllFeatures[f_i]]++;
+                    contingencyTable_f[f_i][v.GoldClass, (int)v.AllFeatures[f_i]]++;
                 }
                 chiSquare[f_i] = new IdValuePair<double>(f_i, StatisticsHelper.CalculateChiSquare(contingencyTable_f[f_i]));
             }

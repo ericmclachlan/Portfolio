@@ -33,8 +33,8 @@ namespace ericmclachlan.Portfolio
             {
                 for (int f_i = 0; f_i < TrainingVectors[v_i].AllFeatures.Length; f_i++)
                 {
-                    countW_c[TrainingVectors[v_i].ClassId] += TrainingVectors[v_i].AllFeatures[f_i];
-                    countW += countW_c[TrainingVectors[v_i].ClassId];
+                    countW_c[TrainingVectors[v_i].GoldClass] += TrainingVectors[v_i].AllFeatures[f_i];
+                    countW += countW_c[TrainingVectors[v_i].GoldClass];
                 }
             }
 

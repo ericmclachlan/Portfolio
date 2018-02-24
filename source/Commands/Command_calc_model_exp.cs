@@ -26,8 +26,7 @@ namespace ericmclachlan.Portfolio
         public void ExecuteCommand()
         {
             // Load the training file.
-            string text = File.ReadAllText(training_data_file);
-            var trainingVectors = FeatureVector.LoadFromSVMLight(text, featureToFeatureId, classToClassId, (count) => { return 1; });
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, (count) => { return 1; });
 
             // model_file is optional. 
             Func<int, FeatureVector, double> calculate_Prob_c_v;
@@ -40,8 +39,7 @@ namespace ericmclachlan.Portfolio
             // If it is given, it is used to calculate p(y|xi). 
             else
             {
-                text = File.ReadAllText(model_file);
-                MaxEntClassifier classifier = MaxEntClassifier.LoadFromModel(text, out classToClassId, out featureToFeatureId);
+                MaxEntClassifier classifier = MaxEntClassifier.LoadModel(model_file, out classToClassId, out featureToFeatureId);
                 calculate_Prob_c_v = (c_i, v) => { return classifier.Classify(v)[c_i]; };
             }
 

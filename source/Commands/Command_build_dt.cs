@@ -40,29 +40,24 @@ namespace ericmclachlan.Portfolio
 
             ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
             ValueIdMapper<string> classToClassId = new ValueIdMapper<string>();
-
-            string text = File.ReadAllText(training_data_file);
-            List<FeatureVector> vectors = FeatureVector.LoadFromSVMLight(text, featureToFeatureId, classToClassId, (count) => { return 1; });
+            
+            List<FeatureVector> trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, (count) => { return 1; });
 
             // Create the Decision Tree
-            DecisionTreeClassifier classifier = new DecisionTreeClassifier(vectors, classToClassId.Count, max_depth, min_gain);
-            text = classifier.Root.GetModelAsText(classToClassId, featureToFeatureId);
+            DecisionTreeClassifier classifier = new DecisionTreeClassifier(trainingVectors, classToClassId.Count, max_depth, min_gain);
+            string text = classifier.Root.GetModelAsText(classToClassId, featureToFeatureId);
             File.WriteAllText(model_file, text);
 
             // Report accuracy on training data.
-            var confusionMatrix = classifier.GetConfusionMatrix(vectors);
-            ProgramOutput.ReportAccuracy("training", confusionMatrix, classToClassId);
-
-            text = File.ReadAllText(test_data_file);
-            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(text, featureToFeatureId, classToClassId, (count) => { return 1; });
-
-            StringBuilder sb = new StringBuilder();
-            ProgramOutput.GenerateSysOutputForVectors("test", classifier, vectors, classToClassId, sb);
-            File.WriteAllText(sys_output, sb.ToString());
+            ConfusionMatrix confusionMatrix = classifier.GetConfusionMatrix(trainingVectors);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "training");
+            
+            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToClassId, (count) => { return 1; });
+            
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test", classifier, trainingVectors, classToClassId, out confusionMatrix);
 
             // Report accuracy on testing data.
-            confusionMatrix = classifier.GetConfusionMatrix(testVectors);
-            ProgramOutput.ReportAccuracy("test", confusionMatrix, classToClassId);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "test");
         }
     }
 }

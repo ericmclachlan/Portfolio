@@ -79,11 +79,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command_TBL_classify.cs" />
+    <Compile Include="Command_TBL_train.cs" />
     <Compile Include="DataStructures\BeamNode.cs" />
     <Compile Include="DataStructures\BeamSearch.cs" />
     <Compile Include="Classifiers\DecisionTreeClassifier.cs" />
-    <Compile Include="Commands\CommandPlatform.cs" />
-    <Compile Include="Commands\CommandParameterAttribute.cs" />
+    <Compile Include="CommandPlatform.cs" />
+    <Compile Include="CommandParameterAttribute.cs" />
     <Compile Include="Commands\Command_build_dt.cs" />
     <Compile Include="Commands\Command_build_kNN.cs" />
     <Compile Include="Commands\Command_build_NB1.cs" />
@@ -93,29 +95,39 @@
     <Compile Include="Commands\Command_maxent_classify.cs" />
     <Compile Include="Commands\Command_POS_maxent.cs" />
     <Compile Include="Commands\Command_beamsearch_maxent.cs" />
+    <Compile Include="ConfusionMatrix.cs" />
     <Compile Include="Helpers\PermutationHelper.cs" />
-    <Compile Include="DataStructures\ValueCollection.cs" />
-    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="ValueCollection.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="DataStructures\IdValuePair.cs" />
     <Compile Include="Classifiers\kNNClassifier.cs" />
     <Compile Include="Classifiers\MaxEntPOSClassifier.cs" />
     <Compile Include="Classifiers\MaxEntClassifier.cs" />
     <Compile Include="ProgramOutput.cs" />
     <Compile Include="Commands\Command_rank_feat_by_chi_square.cs" />
-    <Compile Include="Helpers\SearchHelper.cs" />
+    <Compile Include="SearchHelper.cs" />
     <Compile Include="Helpers\SmoothingHelper.cs" />
-    <Compile Include="Classifiers\Classifier.cs" />
+    <Compile Include="Classifier.cs" />
     <Compile Include="Classifiers\NaiveBayesClassifier_Multinomial.cs" />
     <Compile Include="Classifiers\NaiveBayesClassifier_MultivariateBernoulli.cs" />
     <Compile Include="Classifiers\NaiveBayesClassifier.cs" />
-    <Compile Include="Helpers\PerformanceHelper.cs" />
+    <Compile Include="PerformanceHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+<<<<<<< HEAD
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="DataStructures\ValueIdMapper.cs" />
     <Compile Include="Helpers\TextHelper.cs" />
     <Compile Include="DataStructures\FeatureVector.cs" />
+=======
+    <Compile Include="SortHelper.cs" />
+    <Compile Include="StatisticsHelper.cs" />
+    <Compile Include="TextIdMapper.cs" />
+    <Compile Include="TextHelper.cs" />
+    <Compile Include="FeatureVector.cs" />
+    <Compile Include="TBLClassifier.cs" />
+>>>>>>> TBL
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
