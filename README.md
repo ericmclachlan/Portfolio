@@ -1,9 +1,23 @@
-# Portfolio Project
+# Greetings
 
-This portfolio aims to showcase the technical skills of the developer, Eric McLachlan. The included code is largely based on assignments given as part of post-graduate studies at the University of Washington. The source code, which can be found in the "source" subdirectory, is written in C# and defines a simple console application.
+My name is Eric McLachlan and I am a software engineer and linguist.
+
+Welcome to my portfolio. Please feel free to browse the code included in this project. This code is largely based on assignments I have received as part of my post-graduate studies at the University of Washington. While the design and, to an extent, the methodology are prescribed by the university, these C# implementations are completely my own work. For each assignment I received, I create one or more commands (see below) that are added to the library. The specific commands are probably of limited general use; however the underlying data structures, helper classes, and classifiers themselves are fairly generic and, I'm quite sure, reusable.
+
+Anyway, I hope that you enjoy browsing my wares and that, when you look at it, you find it easy to read and get a sense of the quality of code I can produce.
+
+As time goes by, I will continue to add to and improve this library. In the meantime, I hope you find it interesting; and possibly even useful.
+
+Thank you for taking the time to check this out.
+
+Wishing you the best,
+Eric McLachlan
+
+Email: [ericmclachlan@gmail.com] (mailto:ericmclachlan@gmail.com)
+LinkedIn Profile: linkedin.com/in/ericmclachlan (www.linkedin.com/in/ericmclachlan)
 
 
-# Application Design
+# Application Overview
 
 The main project defines a "Command Platform". The CommandPlatform acts as a delegate, accepting parameters from the console and invoking the ExecuteCommand(...) method of the command specified in the first parameter passed to the application. The remaining parameters are passed to the relevant command.
 
@@ -12,9 +26,9 @@ So, for example, calling "CommandPlatform.exe help" will cause the HelpCommand.E
 The purpose of this project was to make it very easy to add new commands to the platform. To add a new command, simply add a new class (e.g. YourCommand) that implements ICommand. Be sure to set the CommandName property to something like "Your_Command_Name". Then, calling "CommandPlatform.exe Your_Command_Name". This will invoke YourCommand.ExecuteCommand(...). Marking properties of YourCommand with the CommandParameterAttribute will allow you to define parameters for the command, which are validated before control is passed to the ExecuteCommand(...) method.
 
 
-# Solution Structure
+# File Structure
 
-The "source" subdirectory contains the source code to this application.
+The source code, which can be found in the "source" subdirectory, is written in C# and defines a simple console application.
 
 The main directory is very light with only the project file required by visual studio and two other files.
 - Program.cs, which starts up the command platform and delegates to the invoked commands.
