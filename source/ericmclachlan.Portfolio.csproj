@@ -107,7 +107,7 @@
     <Compile Include="Commands\Command_rank_feat_by_chi_square.cs" />
     <Compile Include="Helpers\SearchHelper.cs" />
     <Compile Include="Helpers\SmoothingHelper.cs" />
-    <Compile Include="Classifier.cs" />
+    <Compile Include="Classifiers\Classifier.cs" />
     <Compile Include="Classifiers\NaiveBayesClassifier_Multinomial.cs" />
     <Compile Include="Classifiers\NaiveBayesClassifier_MultivariateBernoulli.cs" />
     <Compile Include="Classifiers\NaiveBayesClassifier.cs" />

@@ -11,3 +11,4 @@
 /model_file
 *.cache
 *.user
+/source/obj/Debug
