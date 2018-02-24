@@ -13,8 +13,9 @@ Thank you for taking the time to check this out.
 Wishing you the best,
 Eric McLachlan
 
-Email: [ericmclachlan@gmail.com] (mailto:ericmclachlan@gmail.com)
-LinkedIn Profile: linkedin.com/in/ericmclachlan (www.linkedin.com/in/ericmclachlan)
+Email: mailto:ericmclachlan@gmail.com
+
+LinkedIn: www.linkedin.com/in/ericmclachlan
 
 
 # Application Overview
