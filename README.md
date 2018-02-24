@@ -1,4 +1,4 @@
-# Portfolio
+# Portfolio 
 
 This portfolio aims to showcase the technical skills of the developer, Eric McLachlan. The included code is largely based on assignments given as part of post-graduate studies at the University of Washington. The source code, which can be found in the "source" subdirectory, is written in C# and defines a simple console application.
 
