@@ -2,15 +2,16 @@
 
 My name is Eric McLachlan and I am a software engineer and linguist.
 
-Welcome to my portfolio. Please feel free to browse the code included in this project. This code is largely based on assignments I have received as part of my post-graduate studies at the University of Washington. While the design and, to an extent, the methodology are prescribed by the university, these C# implementations are completely my own work. For each assignment I received, I create one or more commands (see below) that are added to the library. The specific commands are probably of limited general use; however the underlying data structures, helper classes, and classifiers themselves are fairly generic and, I'm quite sure, reusable.
+Welcome to my portfolio. Please feel free to browse project at your leisure. This code is largely based on assignments I have received as part of my post-graduate studies at the University of Washington. While the design and, to an extent, the methodology are prescribed by the university, these C# implementations are completely my own work. For each assignment I received, I create one or more commands (see below) that are added to the library. The specific commands are probably of limited general use; however the underlying data structures, helper classes, and classifiers themselves are fairly generic and reusable.
 
-Anyway, I hope that you enjoy browsing my wares and that, when you look at it, you find it easy to read and get a sense of the quality of code I can produce.
+Anyway, I hope that you enjoy browsing my wares, that you find it easy to read, and get a sense of the quality of code I can produce.
 
 As time goes by, I will continue to add to and improve this library. In the meantime, I hope you find it interesting; and possibly even useful.
 
 Thank you for taking the time to check this out.
 
 Wishing you the best,
+
 Eric McLachlan
 
 Email: mailto:ericmclachlan@gmail.com
