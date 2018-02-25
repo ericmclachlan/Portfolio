@@ -36,9 +36,8 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            Func<int, int> transformationF = (i) => { return i > 0 ? 1 : 0; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, FeatureType.Binary);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, FeatureType.Binary);
 
             Classifier classifier = new NaiveBayesClassifier_MultivariateBernoulli(class_prior_delta, cond_prob_delta, trainingVectors, classToclassId.Count);
 

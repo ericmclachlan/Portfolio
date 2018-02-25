@@ -26,14 +26,13 @@ namespace ericmclachlan.Portfolio
             var svmLight_data = Console.In.ReadToEnd();
 
             Console.Error.WriteLine("{0} characters of input received.", svmLight_data.Length);
-
-            Func<int, int> transformationF = (i) => { return i > 0 ? 1 : 0; };
+            
             string tempFile = Path.GetTempFileName();
             List<FeatureVector> vectors;
             try
             {
                 File.WriteAllText(tempFile, svmLight_data);
-                vectors = FeatureVector.LoadFromSVMLight(tempFile, featureToFeatureId, classToClassId, transformationF);
+                vectors = FeatureVector.LoadFromSVMLight(tempFile, featureToFeatureId, classToClassId, FeatureType.Binary);
             }
             finally
             {

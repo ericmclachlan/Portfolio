@@ -41,7 +41,7 @@ namespace ericmclachlan.Portfolio
             ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
             ValueIdMapper<string> classToClassId = new ValueIdMapper<string>();
             
-            List<FeatureVector> trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, (count) => { return 1; });
+            List<FeatureVector> trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, FeatureType.Binary);
 
             // Create the Decision Tree
             DecisionTreeClassifier classifier = new DecisionTreeClassifier(trainingVectors, classToClassId.Count, max_depth, min_gain);
@@ -52,7 +52,7 @@ namespace ericmclachlan.Portfolio
             ConfusionMatrix confusionMatrix = classifier.GetConfusionMatrix(trainingVectors);
             ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "training");
             
-            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToClassId, (count) => { return 1; });
+            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToClassId, FeatureType.Binary);
             
             ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test", classifier, trainingVectors, classToClassId, out confusionMatrix);
 

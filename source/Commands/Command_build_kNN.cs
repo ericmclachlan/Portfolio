@@ -33,9 +33,9 @@ namespace ericmclachlan.Portfolio
             var classToclassId = new ValueIdMapper<string>();
             var featureToFeatureId = new ValueIdMapper<string>();
 
-            Func<int, int> transformationF = (i) => { return i; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, FeatureType.Continuous);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, FeatureType.Continuous);
+
             Classifier classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToclassId.Count);
 
             ConfusionMatrix confusionMatrix;

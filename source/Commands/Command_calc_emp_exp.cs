@@ -23,8 +23,7 @@ namespace ericmclachlan.Portfolio
         public void ExecuteCommand()
         {
             // Load the training file.
-            Func<int, int> transformationF = (i) => { return 1; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, FeatureType.Binary);
 
             double[,] observation, expectation;
             CalculateObservationAndEmpiricalExpectation(trainingVectors, out observation, out expectation);

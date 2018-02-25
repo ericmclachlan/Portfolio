@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace ericmclachlan.Portfolio
 {
-    internal static class TextHelper
+    public static class TextHelper
     {
         // Constants
-        internal const string BOS = "<s>";
-        internal const string EOS = "</s>";
+        public const string BOS = "<s>";
+        public const string EOS = "</s>";
 
         private static readonly Dictionary<char, char> _letters;
 
@@ -43,12 +43,12 @@ namespace ericmclachlan.Portfolio
             return text.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        internal static string ToString(IList<string> words)
+        public static string ToString(IList<string> words)
         {
             return ToString(words, words.Count);
         }
 
-        internal static string ToString(IList<string> words, int noOfWords)
+        public static string ToString(IList<string> words, int noOfWords)
         {
             StringBuilder sb = new StringBuilder();
             bool isFirst = true;
@@ -87,7 +87,7 @@ namespace ericmclachlan.Portfolio
         }
 
         /// <summary>Returns true of the specified letter <c>c</c> is either an uppercase or lowercase a letter in the alphabet.</summary>
-        internal static bool IsLetter(char c)
+        public static bool IsLetter(char c)
         {
             return _letters.ContainsKey(c);
         }

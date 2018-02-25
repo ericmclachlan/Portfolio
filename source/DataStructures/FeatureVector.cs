@@ -5,6 +5,12 @@ using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
+    public enum FeatureType
+    {
+        Continuous,
+        Binary,
+    }
+
     /// <summary>A numbers-only encapsulation of training or testing data; and related metadata.</summary>
     public class FeatureVector
     {
@@ -96,7 +102,7 @@ namespace ericmclachlan.Portfolio
             string uri
             , ValueIdMapper<string> featureToFeatureId
             , ValueIdMapper<string> classToClassId
-            , Func<int, int> transformationCount)
+            , FeatureType featureType)
         {
             string text = File.ReadAllText(uri);
             // Step 1: Read the data file:
@@ -141,7 +147,6 @@ namespace ericmclachlan.Portfolio
             // This array is a matrix where each row represents a class and each column represents a word in our dictionary
             // (where the dictionary itself is a dictionary of ALL words in ALL classes).
             var vectors = new List<FeatureVector>();
-            //Debug.Assert(classes.Count == trainingInstances.Count);
             for (int c_i = 0; c_i < classes.Count; c_i++)
             {
                 var wordCounts = trainingInstances[c_i];
@@ -150,8 +155,17 @@ namespace ericmclachlan.Portfolio
                 int w_i = 0;
                 foreach (int f_i in wordCounts.Keys)
                 {
-                    //Debug.Assert(f_i < allFeatures.Length);
-                    allFeatures[f_i] = transformationCount(wordCounts[f_i]);
+                    switch (featureType)
+                    {
+                        case FeatureType.Continuous:
+                            allFeatures[f_i] = wordCounts[f_i];
+                            break;
+                        case FeatureType.Binary:
+                            allFeatures[f_i] = wordCounts[f_i] == 0 ? 0 : 1;
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
                     usedFeatures[w_i++] = f_i;
                 }
                 vectors.Add(new FeatureVector(classes[c_i], allFeatures, usedFeatures, true));

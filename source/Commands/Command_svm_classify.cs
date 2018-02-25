@@ -9,7 +9,7 @@ namespace ericmclachlan.Portfolio
     /// Example: svm_classify test_data model_file sys_output
     /// </para>
     /// </summary>
-    class Command_svm_classify : ICommand
+    public class Command_svm_classify : ICommand
     {
         public string CommandName { get { return "svm_classify"; } }
 
@@ -20,7 +20,7 @@ namespace ericmclachlan.Portfolio
         public string test_data { get; set; }
 
         [CommandParameter(Index = 1, Type = CommandParameterType.InputFile, Description = "The SVM model in libSVM model format.")]
-        /// <summary>The SVM model in libSVM model format. The model_file stores α_iy_i for each support vector and ρ</summary>
+        /// <summary>The SVM model in libSVM model format. The model_file stores α_iy_i for each support vector and ρ.</summary>
         public string model_file { get; set; }
 
         /// <summary>This output file contains the classification results for the test_data.</summary>
@@ -36,9 +36,8 @@ namespace ericmclachlan.Portfolio
             ValueIdMapper<string> featureToFeatureId;
 
             Classifier classifier = SVMClassifier.LoadModel(model_file, out classToclassId, out featureToFeatureId);
-
-            Func<int, int> transformationF = (i) => { return 1; };
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, classToclassId, transformationF);
+            
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, classToclassId, FeatureType.Binary);
 
             ConfusionMatrix confusionMatrix;
             ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
