@@ -38,11 +38,12 @@ namespace ericmclachlan.Portfolio
         {
             Func<int, int> transformationF = (i) => { return i > 0 ? 1 : 0; };
             var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
-            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
+
             Classifier classifier = new NaiveBayesClassifier_MultivariateBernoulli(class_prior_delta, cond_prob_delta, trainingVectors, classToclassId.Count);
 
             ConfusionMatrix confusionMatrix_training;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, classifier.TrainingVectors, classToclassId, out confusionMatrix_training);
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToclassId, out confusionMatrix_training);
             ProgramOutput.ReportAccuracy(confusionMatrix_training, classToclassId, sys_output);
             ConfusionMatrix confusionMatrix_test;
             ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToclassId, out confusionMatrix_test);

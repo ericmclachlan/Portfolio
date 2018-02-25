@@ -6,7 +6,7 @@ namespace ericmclachlan.Portfolio
 {
     public abstract class Classifier
     {
-        public List<FeatureVector> TrainingVectors { get; private set; }
+        protected List<FeatureVector> TrainingVectors { get; private set; }
 
         protected Classifier(List<FeatureVector> trainingVectors, int noOfClasses)
         {

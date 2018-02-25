@@ -39,7 +39,7 @@ namespace ericmclachlan.Portfolio
             Classifier classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToclassId.Count);
 
             ConfusionMatrix confusionMatrix;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, classifier.TrainingVectors, classToclassId, out confusionMatrix);
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToclassId, out confusionMatrix);
             ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Training");
             ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
             ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Test");
