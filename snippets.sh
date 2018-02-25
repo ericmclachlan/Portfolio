@@ -32,27 +32,30 @@ TBL_train	 ..\examples\train2.txt model_file 1
 TBL_classify ..\examples\train2.txt model_file sys_output 1 > acc_train
 TBL_classify ..\examples\test2.txt  model_file sys_output 1 > acc_test
 
+# Hw8
+svm_classify ..\examples\test ..\examples\model_ex sys_output
+
 Copying Files
 -------------
 
-lcd C:\Development\Ling572\ericmcl.Ling572.hw7\work\
-cd /home2/ericmcl/572/hw7/
+lcd C:\Development\git\Portfolio\
+cd /home2/ericmcl/572/hw8/
 mput -r *.sh
 mput *.cmd
 chmod a+x *.sh
 
-lcd C:\Development\Ling572\ericmcl.Ling572.hw7\work\source
-mkdir /home2/ericmcl/572/hw7/source
-cd /home2/ericmcl/572/hw7/source
+lcd C:\Development\git\Portfolio\source
+mkdir /home2/ericmcl/572/hw8/source
+cd /home2/ericmcl/572/hw8/source
 mput -r *.cs
-lcd C:\Development\Ling572\ericmcl.Ling572.hw7\work
-cd /home2/ericmcl/572/hw7
+lcd C:\Development\git\Portfolio\
+cd /home2/ericmcl/572/hw8
 
 
 Run Scripts
 -----------
 
-cd /home2/ericmcl/572/hw7
+cd /home2/ericmcl/572/hw8
 clear
 ./clean.sh
 ls
@@ -65,11 +68,13 @@ tail -F condor.err
 Get Output
 ----------
 
-cd /home2/ericmcl/572/hw7
-lcd C:\Development\Ling572\ericmcl.Ling572.hw7\
-mget -r output_*
+cd /home2/ericmcl/572/hw8
+lcd C:\Development\git\
+mget -r model.*
+mget -r output.*
+mget -r sys.*
 
 
-lcd C:\Development\Ling572\ericmcl.Ling572.hw7\work\
+lcd C:\Development\git\Portfolio\
 get hw.tar.gz
 

@@ -3,12 +3,10 @@
 ################################################################################
 
 /.vs
-/source/bin/x64/Debug
-/source/obj/x64/Debug
-/source/obj/Release
-/source/obj/x64
+/source/bin
+/source/obj
 /acc_train
 /model_file
 *.cache
 *.user
-/source/obj/Debug
+/packages
