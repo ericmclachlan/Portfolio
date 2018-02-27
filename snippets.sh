@@ -33,7 +33,7 @@ TBL_classify ..\examples\train2.txt model_file sys_output 1 > acc_train
 TBL_classify ..\examples\test2.txt  model_file sys_output 1 > acc_test
 
 # Hw8
-svm_classify ..\examples\test ..\examples\model_ex sys_output
+svm_classify ..\examples\libSVM_test ..\examples\libSVM_model sys_output
 
 Copying Files
 -------------
