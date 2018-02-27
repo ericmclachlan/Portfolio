@@ -43,8 +43,7 @@ namespace ericmclachlan.Portfolio
             // Load the training data:
             var featureToFeatureId = new ValueIdMapper<string>();
             var classToClassId = new ValueIdMapper<string>();
-            Func<int, int> transformationF = (i) => { return i; };
-            var testVectors = FeatureVector.LoadFromSVMLight(test_file, featureToFeatureId, classToClassId, transformationF);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_file, featureToFeatureId, classToClassId, FeatureType.Continuous);
         }
     }
 }

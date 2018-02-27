@@ -34,9 +34,8 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            Func<int, int> transformationF = (i) => { return i; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, transformationF);
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, FeatureType.Continuous);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, FeatureType.Continuous);
 
             Classifier classifier = new NaiveBayesClassifier_Multinomial(class_prior_delta, cond_prob_delta, trainingVectors, classToclassId.Count);
 

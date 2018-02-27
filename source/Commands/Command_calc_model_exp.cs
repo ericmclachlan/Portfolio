@@ -26,7 +26,7 @@ namespace ericmclachlan.Portfolio
         public void ExecuteCommand()
         {
             // Load the training file.
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, (count) => { return 1; });
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, FeatureType.Binary);
 
             // model_file is optional. 
             Func<int, FeatureVector, double> calculate_Prob_c_v;

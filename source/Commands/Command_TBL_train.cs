@@ -29,11 +29,11 @@ namespace ericmclachlan.Portfolio
         
         public void ExecuteCommand()
         {
-            // Load the training data:
             var featureToFeatureId = new ValueIdMapper<string>();
             var classToClassId = new ValueIdMapper<string>();
-            Func<int, int> transformationF = (i) => { return i; };
-            var trainingVectors = FeatureVector.LoadFromSVMLight(train_data, featureToFeatureId, classToClassId, transformationF);
+
+            // Load the training data:
+            var trainingVectors = FeatureVector.LoadFromSVMLight(train_data, featureToFeatureId, classToClassId, FeatureType.Continuous);
 
             // Create a TBL classifier:
             var classifier = new TBLClassifier(trainingVectors, classToClassId.Count, min_gain);

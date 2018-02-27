@@ -27,9 +27,8 @@ namespace ericmclachlan.Portfolio
             ValueIdMapper<string> featureToFeatureId;
 
             Classifier classifier = MaxEntClassifier.LoadModel(model_file, out classToclassId, out featureToFeatureId);
-
-            Func<int, int> transformationF = (i) => { return 1; };
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, transformationF);
+            
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, FeatureType.Binary);
 
             ConfusionMatrix confusionMatrix;
             ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
