@@ -20,7 +20,7 @@ namespace ericmclachlan.Portfolio
     /// <para>The command platform acts as the platform from which commands can be executed.</para>
     /// <para>Loading of commands is dynamic; requiring only that classes implement the ICommand interface. </para>
     /// </summary>
-    public static class CommandPlatform
+    internal static class CommandPlatform
     {   
         // Private Members
 
@@ -48,7 +48,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public static void Execute(string[] args)
+        internal static void Execute(string[] args)
         {
             // Rare Case: No command is specified.
             if (args.Length == 0)

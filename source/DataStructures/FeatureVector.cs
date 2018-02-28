@@ -6,6 +6,9 @@ using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
+    /// <summary>
+    /// The values in the a feature vector file may be <c>Binary</c> consisting of {0, 1} or <c>Continuous</c> {-infinity; infinity}.
+    /// </summary>
     public enum FeatureType
     {
         Continuous,
@@ -83,7 +86,7 @@ namespace ericmclachlan.Portfolio
 
 
         // Public Methods
-        
+
         /// <summary>
         /// Displays the vector 
         /// </summary>
@@ -107,6 +110,16 @@ namespace ericmclachlan.Portfolio
 
         // Static Methods
 
+        /// <summary>Loads and returns a collection of FeatureVectors from the specified <c>uri</c>.</summary>
+        /// <param name="uri">A file, storing the features in SVM format.</param>
+        /// <param name="featureToFeatureId">
+        /// A mapping between the feature's text values and internal numeric identifiers that represents these value.
+        /// </param>
+        /// <param name="classToClassId">
+        /// A mapping between class's names and internal numeric identifiers that represents these class names.
+        /// </param>
+        /// <param name="transformationCount"></param>
+        /// <returns></returns>
         public static List<FeatureVector> LoadFromSVMLight(
             string input_file
             , ValueIdMapper<string> featureToFeatureId
@@ -123,6 +136,16 @@ namespace ericmclachlan.Portfolio
             return LoadFromSVMLight(lines, featureToFeatureId, headerToHeaderIds, noOfHeaderColumns, out headers, featureType, featureDelimiter, isSortRequiredForFeatures);
         }
 
+        /// <summary>Loads and returns a collection of FeatureVectors from the specified <c>uri</c>.</summary>
+        /// <param name="uri">A file, storing the features in SVM format.</param>
+        /// <param name="featureToFeatureId">
+        /// A mapping between the feature's text values and internal numeric identifiers that represents these value.
+        /// </param>
+        /// <param name="classToClassId">
+        /// A mapping between class's names and internal numeric identifiers that represents these class names.
+        /// </param>
+        /// <param name="transformationCount"></param>
+        /// <returns></returns>
         public static List<FeatureVector> LoadFromSVMLight(IList<string> lines, ValueIdMapper<string> featureToFeatureId, ValueIdMapper<string>[] headerToHeaderIds, int noOfHeaderColumns, out int[][] headers, FeatureType featureType, char featureDelimiter, bool isSortRequiredForFeatures)
         {
             Debug.Assert(noOfHeaderColumns > 0);
