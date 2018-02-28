@@ -15,8 +15,8 @@ namespace ericmclachlan.Portfolio
 
         // Construction
 
-        public NaiveBayesClassifier_Multinomial(double class_prior_delta, double cond_prob_delta, List<FeatureVector> trainingVectors, int noOfClasses)
-            : base(class_prior_delta, cond_prob_delta, trainingVectors, noOfClasses)
+        public NaiveBayesClassifier_Multinomial(double class_prior_delta, double cond_prob_delta, List<FeatureVector> trainingVectors, int noOfClasses, int gold_i)
+            : base(class_prior_delta, cond_prob_delta, trainingVectors, noOfClasses, gold_i)
         {
             // Nothing else needs to be done.
         }
@@ -33,8 +33,8 @@ namespace ericmclachlan.Portfolio
             {
                 for (int f_i = 0; f_i < TrainingVectors[v_i].AllFeatures.Length; f_i++)
                 {
-                    countW_c[TrainingVectors[v_i].GoldClass] += TrainingVectors[v_i].AllFeatures[f_i];
-                    countW += countW_c[TrainingVectors[v_i].GoldClass];
+                    countW_c[TrainingVectors[v_i].Headers[Gold_i]] += TrainingVectors[v_i].AllFeatures[f_i];
+                    countW += countW_c[TrainingVectors[v_i].Headers[Gold_i]];
                 }
             }
 

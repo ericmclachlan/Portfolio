@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -40,7 +41,21 @@ namespace ericmclachlan.Portfolio
 
         public static string[] SplitOnWhitespace(string text)
         {
-            return text.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            return text.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static string[] SplitOnWhitespaceOr(string text, params char[] delimiters)
+        {
+            char[] list = new char[2 + delimiters.Length];
+            int i = 0;
+            for (; i < delimiters.Length; i++)
+            {
+                list[i] = delimiters[i];
+            }
+            list[i++] = ' ';
+            list[i++] = '\t';
+            Debug.Assert(i == delimiters.Length + 2);
+            return text.Split(list, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static string ToString(IList<string> words)

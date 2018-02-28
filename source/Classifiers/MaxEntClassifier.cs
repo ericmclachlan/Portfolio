@@ -137,7 +137,7 @@ namespace ericmclachlan.Portfolio
                 {
                     features[usedFeatureId] = probability_c_uf[c_i][usedFeatureId];
                 }
-                FeatureVector vector = new FeatureVector(c_i, features, probability_c_uf[c_i].Keys.ToArray(), false);
+                FeatureVector vector = new FeatureVector(new int[] { c_i }, features, probability_c_uf[c_i].Keys.ToArray(), false);
                 vectors.Add(vector);
             }
         }

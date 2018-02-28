@@ -22,5 +22,17 @@ namespace ericmclachlan.Portfolio
                 Console.Error.WriteLine("Error: {0}", ex.Message);
             }
         }
+
+        /// <summary>Creates a set of ValueIdMapper for use with classifiers.</summary>
+        internal static void CreateValueIdMappers(int noOfHeadersColumns, int gold_i, out ValueIdMapper<string> featureToFeatureId, out ValueIdMapper<string>[] headerToHeaderIds, out ValueIdMapper<string> classToClassId)
+        {
+            featureToFeatureId = new ValueIdMapper<string>();
+            headerToHeaderIds = new ValueIdMapper<string>[noOfHeadersColumns];
+            for (int i = 0; i < noOfHeadersColumns; i++)
+            {
+                headerToHeaderIds[i] = new ValueIdMapper<string>();
+            }
+            classToClassId = headerToHeaderIds[gold_i];
+        }
     }
 }

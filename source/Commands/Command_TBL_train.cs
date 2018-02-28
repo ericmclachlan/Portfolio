@@ -29,14 +29,19 @@ namespace ericmclachlan.Portfolio
         
         public void ExecuteCommand()
         {
-            var featureToFeatureId = new ValueIdMapper<string>();
-            var classToClassId = new ValueIdMapper<string>();
+            int noOfHeadersColumns = 1;
+            int gold_i = 0;
+            ValueIdMapper<string> featureToFeatureId;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            ValueIdMapper<string> classToClassId;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
 
-            // Load the training data:
-            var trainingVectors = FeatureVector.LoadFromSVMLight(train_data, featureToFeatureId, classToClassId, FeatureType.Continuous);
+            int[][] headers;
+            var trainingVectors = FeatureVector.LoadFromSVMLight(train_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
+            var goldClasses = headers[gold_i];
 
             // Create a TBL classifier:
-            var classifier = new TBLClassifier(trainingVectors, classToClassId.Count, min_gain);
+            var classifier = new TBLClassifier(trainingVectors, classToClassId.Count, min_gain, gold_i);
 
             // Save the TBL classifier model to the model_file:
             classifier.SaveModel(model_file, classToClassId, featureToFeatureId);

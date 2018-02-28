@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -16,9 +17,6 @@ namespace ericmclachlan.Portfolio
     {
         // Properties
 
-        /// <summary>The given class of this document; as opposed to the predicted class.</summary>
-        public readonly int GoldClass;
-
         /// <summary>Each value in this array stores the value of a feature, where the array's index==featureID.</summary>
         // TODO: Rename to Values. Possibly deprecate and modify UsedFeatures to provide direct access.
         public readonly ValueCollection AllFeatures;
@@ -26,8 +24,8 @@ namespace ericmclachlan.Portfolio
         /// <summary>Each value in this array stores the index(==identifier) of a feature used in this document.</summary>
         public readonly int[] UsedFeatures;
 
-        private readonly string _text;
-        private readonly int _hashCode;
+        public readonly int[] Headers;
+
 
         /// <summary>
         /// Storage for any data a classifier wants to store for a given vector. (e.g. metadata, pre-computed values, etc)
@@ -37,14 +35,17 @@ namespace ericmclachlan.Portfolio
 
         // Construction
 
-        public FeatureVector(int classId, ValueCollection values, int[] usedFeatures, bool sortUsedFeatures)
+        public FeatureVector(int[] headers, ValueCollection features, int[] usedFeatures, bool sortUsedFeatures)
         {
-            GoldClass = classId;
-            AllFeatures = values;
+            Headers = headers;
+            AllFeatures = features;
             UsedFeatures = usedFeatures;
+
+            // Sometimes, it is preferable to have the features sorted. In these cases, sort the features.
             if (sortUsedFeatures)
                 SortHelper.QuickSort(UsedFeatures);
 
+            // Optimization: The text representation and hash code are cached to speed up dictionary lookups etc.
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
             bool isFirst = true;
@@ -58,14 +59,15 @@ namespace ericmclachlan.Portfolio
                 sb.AppendFormat("{0}:{1}", f_i, AllFeatures[f_i]);
             }
             sb.AppendLine("}");
-
-            // The following members are defined to speed up caching.
             _text = sb.ToString();
             _hashCode = _text.GetHashCode();
         }
 
 
-        // Overrides
+        #region Overrides
+
+        private readonly string _text;
+        private readonly int _hashCode;
 
         public override string ToString()
         {
@@ -77,10 +79,16 @@ namespace ericmclachlan.Portfolio
             return _hashCode;
         }
 
+        #endregion
 
-        // Methods
 
-
+        // Public Methods
+        
+        /// <summary>
+        /// Displays the vector 
+        /// </summary>
+        /// <param name="featureToFeatureId"></param>
+        /// <returns></returns>
         public string Display(ValueIdMapper<string> featureToFeatureId)
         {
             StringBuilder sb = new StringBuilder();
@@ -96,149 +104,111 @@ namespace ericmclachlan.Portfolio
             return sb.ToString();
         }
 
+
         // Static Methods
 
         public static List<FeatureVector> LoadFromSVMLight(
-            string uri
+            string input_file
             , ValueIdMapper<string> featureToFeatureId
-            , ValueIdMapper<string> classToClassId
-            , FeatureType featureType)
+            , ValueIdMapper<string>[] headerToHeaderIds
+            , int noOfHeaderColumns
+            , out int[][] headers
+            , FeatureType featureType
+            , char featureDelimiter
+            , bool isSortRequiredForFeatures)
         {
-            string text = File.ReadAllText(uri);
             // Step 1: Read the data file:
-            var classes = new List<int>();
-            var trainingInstances = new List<Dictionary<int, int>>();
+            string[] lines = File.ReadAllLines(input_file);
 
-            var lineNo = 0;
-            var lines = TextHelper.SplitOnNewline(text);
-            foreach (string line in lines)
+            return LoadFromSVMLight(lines, featureToFeatureId, headerToHeaderIds, noOfHeaderColumns, out headers, featureType, featureDelimiter, isSortRequiredForFeatures);
+        }
+
+        public static List<FeatureVector> LoadFromSVMLight(IList<string> lines, ValueIdMapper<string> featureToFeatureId, ValueIdMapper<string>[] headerToHeaderIds, int noOfHeaderColumns, out int[][] headers, FeatureType featureType, char featureDelimiter, bool isSortRequiredForFeatures)
+        {
+            Debug.Assert(noOfHeaderColumns > 0);
+            headers = new int[noOfHeaderColumns][];
+
+            var wordBags_i = new List<Dictionary<int, int>>();
+
+            // Now that we know the number of lines, we can create the arrays for storing the header columns.
+            for (int j = 0; j < headers.Length; j++)
             {
-                lineNo++;
-                var chunks = TextHelper.SplitOnWhitespace(line);
-
-                // The first chunk contains the class:
-                classes.Add(classToClassId[chunks[0]]);
-
-                // For each of the words in the document, ...
-                var wordCount = new Dictionary<int, int>();
-                for (int i = 1; i < chunks.Length; i++)
-                {
-                    var index = chunks[i].LastIndexOf(':');
-                    //Debug.Assert(index >= 0);
-                    var word = chunks[i].Substring(0, index);
-                    int noOfReferences;
-                    if (!Int32.TryParse(chunks[i].Substring(index + 1, chunks[i].Length - index - 1), out noOfReferences))
-                    {
-                        Console.Error.WriteLine("Error: Line No {0}:   '{1}' did not meet the expected format and has been ignored.", lineNo, chunks[i]);
-                        continue;
-                    }
-                    int num;
-                    var wordId = featureToFeatureId[word];
-                    if (!wordCount.TryGetValue(wordId, out num))
-                    {
-                        num = 0;
-                    }
-                    wordCount[wordId] = num + noOfReferences;
-                }
-                trainingInstances.Add(wordCount);
+                headers[j] = new int[lines.Count];
+                Debug.Assert(headerToHeaderIds[j] != null);
             }
 
-            // Step 2: 
+            // Parse 1: Iterate over each of the rows:
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string line = lines[i];
+                var chunks = TextHelper.SplitOnWhitespaceOr(line, featureDelimiter);
+
+                // The first chunk contains the class:
+                int j = 0;
+                for (; j < headers.Length; j++)
+                {
+                    headers[j][i] = headerToHeaderIds[j][chunks[j]];
+                }
+
+                // For each of the words in the document, ...
+                var wordToWordCount = new Dictionary<int, int>();
+                for (; j < chunks.Length; j += 2)
+                {
+                    int count = Int32.Parse(chunks[j + 1]);
+                    var featureId = featureToFeatureId[chunks[j]];
+                    // Add this count to the existing sum:
+                    int sum;
+                    if (!wordToWordCount.TryGetValue(featureId, out sum))
+                    {
+                        sum = 0;
+                    }
+                    wordToWordCount[featureId] = sum + count;
+                }
+                wordBags_i.Add(wordToWordCount);
+            }
+
+            // Parse 2: 
             // This array is a matrix where each row represents a class and each column represents a word in our dictionary
             // (where the dictionary itself is a dictionary of ALL words in ALL classes).
             var vectors = new List<FeatureVector>();
-            for (int c_i = 0; c_i < classes.Count; c_i++)
+            for (int i = 0; i < lines.Count; i++)
             {
-                var wordCounts = trainingInstances[c_i];
+                var wordCounts = wordBags_i[i];
                 var allFeatures = new ValueCollection(featureToFeatureId.Count);
                 var usedFeatures = new int[wordCounts.Keys.Count];
+                int[] headers_j = new int[noOfHeaderColumns];
+                for (int j = 0; j < noOfHeaderColumns; j++)
+                {
+                    headers_j[j] = headers[j][i];
+                }
                 int w_i = 0;
                 foreach (int f_i in wordCounts.Keys)
                 {
-                    switch (featureType)
-                    {
-                        case FeatureType.Continuous:
-                            allFeatures[f_i] = wordCounts[f_i];
-                            break;
-                        case FeatureType.Binary:
-                            allFeatures[f_i] = wordCounts[f_i] == 0 ? 0 : 1;
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
+                    allFeatures[f_i] = GetFeatureValue(featureType, wordCounts[f_i]);
                     usedFeatures[w_i++] = f_i;
                 }
-                vectors.Add(new FeatureVector(classes[c_i], allFeatures, usedFeatures, true));
+                vectors.Add(new FeatureVector(headers_j, allFeatures, usedFeatures, isSortRequiredForFeatures));
             }
             return vectors;
         }
 
-        public static List<FeatureVector> FromModifiedSVMLight(
-            string text
-            , ValueIdMapper<string> featureToFeatureId
-            , ValueIdMapper<string> classToClassId
-            , Func<int, int> transformationF
-            , out List<string> instances)
+
+        // Private Members
+
+        /// <summary>Stores the feature value according to the specified <c>featureType</c>.</summary>
+        private static int GetFeatureValue(FeatureType featureType, int value)
         {
-            // Step 1: Read the data file:
-            var goldClasses = new List<int>();
-            var trainingInstances = new List<Dictionary<int, int>>();
-            instances = new List<string>();
-
-            var lineNo = 0;
-            var lines = TextHelper.SplitOnNewline(text);
-            foreach (string line in lines)
+            // TODO: Consider making this method abstract and creating two subtypes of FeatureVector such that
+            // ContinuousFeatureVector and BinaryFeatureVector have different implementations for this method.
+            switch (featureType)
             {
-                lineNo++;
-                var chunks = TextHelper.SplitOnWhitespace(line);
-
-                // The first chunk contains the class:
-                instances.Add(chunks[0]);
-                goldClasses.Add(classToClassId[chunks[1]]);
-
-                // For each of the words in the document, ...
-                var wordCount = new Dictionary<int, int>();
-                for (int i = 2; i < chunks.Length; i += 2)
-                {
-                    //Debug.Assert(index >= 0);
-                    var word = chunks[i];
-                    int noOfReferences;
-                    if (!Int32.TryParse(chunks[i + 1], out noOfReferences))
-                    {
-                        Console.Error.WriteLine("Error: Line No {0}:   '{1}' did not meet the expected format and has been ignored.", lineNo, chunks[i]);
-                        continue;
-                    }
-                    int num;
-                    var wordId = featureToFeatureId[word];
-                    if (!wordCount.TryGetValue(wordId, out num))
-                    {
-                        num = 0;
-                    }
-                    wordCount[wordId] = num + noOfReferences;
-                }
-                trainingInstances.Add(wordCount);
+                case FeatureType.Continuous:
+                    return value;
+                case FeatureType.Binary:
+                    return value == 0 ? 0 : 1;
+                default:
+                    throw new NotImplementedException();
             }
-
-            // Step 2: 
-            // This array is a matrix where each row represents a class and each column represents a word in our dictionary
-            // (where the dictionary itself is a dictionary of ALL words in ALL classes).
-            var vectors = new List<FeatureVector>();
-            //Debug.Assert(classes.Count == trainingInstances.Count);
-            for (int v_i = 0; v_i < trainingInstances.Count; v_i++)
-            {
-                var wordCounts = trainingInstances[v_i];
-                var allFeatures = new ValueCollection(featureToFeatureId.Count);
-                var usedFeatures = new int[wordCounts.Keys.Count];
-                int w_i = 0;
-                foreach (int f_i in wordCounts.Keys)
-                {
-                    //Debug.Assert(f_i < allFeatures.Length);
-                    allFeatures[f_i] = transformationF(wordCounts[f_i]);
-                    usedFeatures[w_i++] = f_i;
-                }
-                vectors.Add(new FeatureVector(goldClasses[v_i], allFeatures, usedFeatures, true));
-            }
-            return vectors;
         }
     }
 }

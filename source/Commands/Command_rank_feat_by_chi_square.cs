@@ -26,13 +26,24 @@ namespace ericmclachlan.Portfolio
             var svmLight_data = Console.In.ReadToEnd();
 
             Console.Error.WriteLine("{0} characters of input received.", svmLight_data.Length);
-            
+                
             string tempFile = Path.GetTempFileName();
+            int[] goldClasses;
             List<FeatureVector> vectors;
+            int gold_i = 0;
             try
             {
                 File.WriteAllText(tempFile, svmLight_data);
-                vectors = FeatureVector.LoadFromSVMLight(tempFile, featureToFeatureId, classToClassId, FeatureType.Binary);
+
+                int noOfHeadersColumns = 1;
+                ValueIdMapper<string> featureToFeatureId;
+                ValueIdMapper<string>[] headerToHeaderIds;
+                ValueIdMapper<string> classToClassId;
+                Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+
+                int[][] headers;
+                vectors = FeatureVector.LoadFromSVMLight(tempFile, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter:' ' , isSortRequiredForFeatures: false);
+                goldClasses = headers[gold_i];
             }
             finally
             {
@@ -50,7 +61,7 @@ namespace ericmclachlan.Portfolio
                 for (int v_i = 0; v_i < vectors.Count; v_i++)
                 {
                     FeatureVector v = vectors[v_i];
-                    contingencyTable_f[f_i][v.GoldClass, (int)v.AllFeatures[f_i]]++;
+                    contingencyTable_f[f_i][v.Headers[gold_i], (int)v.AllFeatures[f_i]]++;
                 }
                 chiSquare[f_i] = new IdValuePair<double>(f_i, StatisticsHelper.CalculateChiSquare(contingencyTable_f[f_i]));
             }

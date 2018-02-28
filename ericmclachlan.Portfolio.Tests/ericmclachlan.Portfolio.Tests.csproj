@@ -67,15 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="Resources\libSVM_model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\libSVM_test">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\libSVM_train">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="Resources\libSVM_model" />
+    <None Include="Resources\libSVM_test" />
+    <None Include="Resources\libSVM_train" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\source\ericmclachlan.Portfolio.csproj">

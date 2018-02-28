@@ -57,6 +57,12 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
+            int noOfHeadersColumns = 2;
+            int instanceName_i = 0;
+            int gold_i = 1;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+
             // Read the boundaries:
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
 
@@ -65,13 +71,22 @@ namespace ericmclachlan.Portfolio
             int trainingFeatureCount = featureToFeatureId.Count;
 
             // Read the vectors:
-            List<string> instanceNames;
-            Func<int, int> transformationF = (i) => { return i; };
-            var testVectors = FeatureVector.FromModifiedSVMLight(File.ReadAllText(test_data), featureToFeatureId, classToClassId, transformationF, out instanceNames);
+            int[][] headers;
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Continuous, featureDelimiter: ':', isSortRequiredForFeatures: false);
+            int[] instanceNameIds = headers[instanceName_i];
+            int[] goldClasses = headers[gold_i];
+
+            // TODO: Neaten this up a little.
+            string[] instanceNames = new string[instanceNameIds.Length];
+            for (int i = 0; i < instanceNameIds.Length; i++)
+            {
+                int instanceNameId = instanceNameIds[i];
+                instanceNames[i] = headerToHeaderIds[instanceName_i][i];
+            }
 
             // Generate sys_output:
             ConfusionMatrix confusionMatrix;
-            File.WriteAllText(sys_output, GenerateSysOutput(instanceNames, testVectors, sentenceLengths, out confusionMatrix));
+            File.WriteAllText(sys_output, GenerateSysOutput(instanceNames, testVectors, sentenceLengths, out confusionMatrix, gold_i));
 
             // Generate acc:
             Console.WriteLine($"class_num={classToClassId.Count} feat_num={trainingFeatureCount}");
@@ -101,6 +116,7 @@ namespace ericmclachlan.Portfolio
             , IList<FeatureVector> testVectors
             , int[] sentenceLengths
             , out ConfusionMatrix confusionMatrix
+            , int gold_i
             )
         {
             StringBuilder sb = new StringBuilder();
@@ -134,7 +150,7 @@ namespace ericmclachlan.Portfolio
                 for (int w_i = 0; w_i < sentenceLengths[s_i]; w_i++)
                 {
                     string instanceName = instanceNames[w_i];
-                    int goldClassId = sentences[s_i][w_i].GoldClass;
+                    int goldClassId = sentences[s_i][w_i].Headers[gold_i];
                     string goldClass = classToClassId[goldClassId];
 
                     // sysClass is the tag c for the word w according to the best tag sequence found above.

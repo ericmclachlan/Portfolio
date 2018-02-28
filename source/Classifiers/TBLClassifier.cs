@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ericmclachlan.Portfolio
 {
@@ -13,18 +9,20 @@ namespace ericmclachlan.Portfolio
         // Properties
 
         public readonly int MinGain;
+        private readonly int Gold_i;
 
         public readonly List<Transformation> _transformations;
 
 
         // Construction
 
-        public TBLClassifier(List<FeatureVector> trainingVectors, int noOfClasses, int minGain) 
+        public TBLClassifier(List<FeatureVector> trainingVectors, int noOfClasses, int minGain, int gold_i) 
             : base(trainingVectors, noOfClasses)
         {
             // Nothing else needs to be done for now.
             _transformations = new List<Transformation>();
             MinGain = minGain;
+            Gold_i = gold_i;
         }
 
         // Methods
@@ -66,7 +64,7 @@ namespace ericmclachlan.Portfolio
             for (int v_i = 0; v_i < TrainingVectors.Count; v_i++)
             {
                 int fromClass = current_class[v_i];
-                int goldClass = TrainingVectors[v_i].GoldClass;
+                int goldClass = TrainingVectors[v_i].Headers[Gold_i];
                 for (int u_i = 0; u_i < TrainingVectors[v_i].UsedFeatures.Length; u_i++)
                 {
                     int f_i = TrainingVectors[v_i].UsedFeatures[u_i];
@@ -149,11 +147,11 @@ namespace ericmclachlan.Portfolio
         }
 
         /// <summary>Loads a TBL classidier from the model_file at the specifiedl location.</summary>
-        public static TBLClassifier LoadModel(string model_file)
+        public static TBLClassifier LoadModel(string model_file, int gold_i)
         {
             int noOfClasses = 3;
             // Set the minimum gain to -1 (an invalid value) to indicate that the model has been loaded.
-            return new TBLClassifier(null, noOfClasses, -1);
+            return new TBLClassifier(null, noOfClasses, -1, gold_i);
         }
 
         /// <summary>

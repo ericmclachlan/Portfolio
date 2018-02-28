@@ -69,7 +69,8 @@ namespace ericmclachlan.Portfolio
             , Classifier classifier
             , List<FeatureVector> vectors
             , ValueIdMapper<string> classToclassId
-            , out ConfusionMatrix confusionMatrix)
+            , out ConfusionMatrix confusionMatrix
+            , int gold_i)
         {
             confusionMatrix = null;
             StreamWriter writer = null;
@@ -91,7 +92,7 @@ namespace ericmclachlan.Portfolio
                     // Output the {instanceName} {true_class_label} {details}
                     int sysClass;
                     string detailsAsText = GetDetailsAsText(classifier, vectors[v_i], classToclassId, out sysClass);
-                    writer.WriteLine("array:{0}\t{1}", v_i, classToclassId[vectors[v_i].GoldClass], detailsAsText);
+                    writer.WriteLine("array:{0}\t{1}", v_i, classToclassId[vectors[v_i].Headers[gold_i]], detailsAsText);
                 }
                 writer.WriteLine();
                 writer.WriteLine();

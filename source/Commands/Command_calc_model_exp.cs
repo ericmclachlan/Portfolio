@@ -25,8 +25,16 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            // Load the training file.
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToClassId, FeatureType.Binary);
+            int noOfHeadersColumns = 1;
+            int gold_i = 0;
+            ValueIdMapper<string> featureToFeatureId;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            ValueIdMapper<string> classToClassId;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+
+            int[][] headers;
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
+            var goldClasses_train = headers[gold_i];
 
             // model_file is optional. 
             Func<int, FeatureVector, double> calculate_Prob_c_v;

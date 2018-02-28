@@ -79,13 +79,13 @@ namespace ericmclachlan.Portfolio
         // Methods
 
         /// <summary>Returns a confusion matrix for the given set of vectors.</summary>
-        public ConfusionMatrix GetConfusionMatrix(List<FeatureVector> vectors)
+        public ConfusionMatrix GetConfusionMatrix(List<FeatureVector> vectors, int gold_i)
         {
             ConfusionMatrix confusionMatrix = new ConfusionMatrix(NoOfClasses);
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
                 int systemClass = StatisticsHelper.ArgMax(Classify(vectors[v_i]));
-                confusionMatrix[vectors[v_i].GoldClass, systemClass]++;
+                confusionMatrix[vectors[v_i].Headers[gold_i], systemClass]++;
             }
             return confusionMatrix;
         }

@@ -27,26 +27,34 @@ namespace ericmclachlan.Portfolio
 
         [CommandParameter(Index = 5, Description = "The classification result on the training and test data (cf. sys1).")]
         public string sys_output { get; set; }
-
-        private ValueIdMapper<string> classToclassId = new ValueIdMapper<string>();
-        private ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
         
 
         // Methods
 
         public void ExecuteCommand()
         {
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, FeatureType.Binary);
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, FeatureType.Binary);
+            int noOfHeadersColumns = 1;
+            int gold_i = 0;
+            ValueIdMapper<string> featureToFeatureId;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            ValueIdMapper<string> classToClassId;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
 
-            Classifier classifier = new NaiveBayesClassifier_MultivariateBernoulli(class_prior_delta, cond_prob_delta, trainingVectors, classToclassId.Count);
+            int[][] headers;
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter:' ' , isSortRequiredForFeatures: false);
+            var goldClasses_train = headers[gold_i];
+
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter:' ' , isSortRequiredForFeatures: false);
+            var goldClasses_test = headers[gold_i];
+
+            Classifier classifier = new NaiveBayesClassifier_MultivariateBernoulli(class_prior_delta, cond_prob_delta, trainingVectors, classToClassId.Count, gold_i);
 
             ConfusionMatrix confusionMatrix_training;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToclassId, out confusionMatrix_training);
-            ProgramOutput.ReportAccuracy(confusionMatrix_training, classToclassId, sys_output);
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToClassId, out confusionMatrix_training, gold_i);
+            ProgramOutput.ReportAccuracy(confusionMatrix_training, classToClassId, sys_output);
             ConfusionMatrix confusionMatrix_test;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToclassId, out confusionMatrix_test);
-            ProgramOutput.ReportAccuracy(confusionMatrix_test, classToclassId, "Test");
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToClassId, out confusionMatrix_test, gold_i);
+            ProgramOutput.ReportAccuracy(confusionMatrix_test, classToClassId, "Test");
         }
     }
 }

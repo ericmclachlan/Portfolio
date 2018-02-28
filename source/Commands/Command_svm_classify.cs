@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ericmclachlan.Portfolio
+﻿namespace ericmclachlan.Portfolio
 {
     /// <summary>
     /// <para>
@@ -32,16 +30,22 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            ValueIdMapper<string> classToclassId;
+            int noOfHeadersColumns = 1;
+            int gold_i = 0;
             ValueIdMapper<string> featureToFeatureId;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            ValueIdMapper<string> classToClassId;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
 
-            Classifier classifier = SVMClassifier.LoadModel(model_file, out classToclassId, out featureToFeatureId);
+            int[][] headers;
+            var vectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ':', isSortRequiredForFeatures: false);
+            var goldClasses = headers[gold_i];
             
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, classToclassId, FeatureType.Binary);
+            Classifier classifier = SVMClassifier.LoadModel(model_file, classToClassId, featureToFeatureId);
 
             ConfusionMatrix confusionMatrix;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Test");
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test data", classifier, vectors, classToClassId, out confusionMatrix, gold_i);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
         }
     }
 }

@@ -24,14 +24,17 @@ namespace ericmclachlan.Portfolio
         /// <summary>The number of training instances.</summary>
         protected long count_t;
 
+        protected readonly int Gold_i;
+
 
         // Construction
 
-        public NaiveBayesClassifier(double class_prior_delta, double cond_prob_delta, List<FeatureVector> trainingVectors, int noOfClasses)
+        public NaiveBayesClassifier(double class_prior_delta, double cond_prob_delta, List<FeatureVector> trainingVectors, int noOfClasses, int gold_i)
             : base(trainingVectors, noOfClasses)
         {
             ClassPriorDelta = class_prior_delta;
             ConditionalProbabilityDelta = cond_prob_delta;
+            Gold_i = gold_i;
         }
 
 
@@ -62,9 +65,9 @@ namespace ericmclachlan.Portfolio
                 {
                     int f_i = v.UsedFeatures[w_i];
                     //Debug.Assert(v.AllFeatures[f_i] != 0);
-                    count_f_c[f_i, v.GoldClass] += v.AllFeatures[f_i];
+                    count_f_c[f_i, v.Headers[Gold_i]] += v.AllFeatures[f_i];
                 }
-                count_c[v.GoldClass]++;
+                count_c[v.Headers[Gold_i]]++;
             }
 
             // Summarize the data to make calculations super-fast later.

@@ -14,8 +14,8 @@ namespace ericmclachlan.Portfolio
 
         // Construction
 
-        public NaiveBayesClassifier_MultivariateBernoulli(double class_prior_delta, double cond_prob_delta, List<FeatureVector> trainingVectors, int noOfClasses)
-            : base(class_prior_delta, cond_prob_delta, trainingVectors, noOfClasses)
+        public NaiveBayesClassifier_MultivariateBernoulli(double class_prior_delta, double cond_prob_delta, List<FeatureVector> trainingVectors, int noOfClasses, int gold_i)
+            : base(class_prior_delta, cond_prob_delta, trainingVectors, noOfClasses, gold_i)
         {
             // Nothing else needs to be done.
         }

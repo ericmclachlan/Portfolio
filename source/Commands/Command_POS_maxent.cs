@@ -57,6 +57,12 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
+            int noOfHeadersColumns = 2;
+            int instanceName_i = 0;
+            int gold_i = 1;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+
             // Read the boundaries:
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
 
@@ -64,12 +70,22 @@ namespace ericmclachlan.Portfolio
             classifier = MaxEntPOSClassifier.LoadModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
 
             // Read the vectors:
-            List<string> instanceNames;
-            Func<int, int> transformationF = (i) => { return i; };
-            var testVectors = FeatureVector.FromModifiedSVMLight(File.ReadAllText(test_data), featureToFeatureId, classToClassId, transformationF, out instanceNames);
-            
+            // Read the vectors:
+            int[][] headers;
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Continuous, featureDelimiter: ':', isSortRequiredForFeatures: false);
+            int[] instanceNameIds = headers[instanceName_i];
+            int[] goldClasses = headers[gold_i];
+
+            // TODO: Neaten this up a little.
+            string[] instanceNames = new string[instanceNameIds.Length];
+            for (int i = 0; i < instanceNameIds.Length; i++)
+            {
+                int instanceNameId = instanceNameIds[i];
+                instanceNames[i] = headerToHeaderIds[instanceName_i][i];
+            }
+
             // Generate sys_output:
-            var confusionMatrix = GenerateSysOutput(sys_output, instanceNames, testVectors, sentenceLengths);
+            var confusionMatrix = GenerateSysOutput(sys_output, instanceNames, testVectors, sentenceLengths, gold_i);
 
             // Generate acc:
             Console.WriteLine($"class_num={classToClassId.Count} feat_num={featureToFeatureId.Count}");
@@ -99,6 +115,7 @@ namespace ericmclachlan.Portfolio
             , IList<string> instanceNames
             , IList<FeatureVector> testVectors
             , int[] sentenceLengths
+            , int gold_i
             )
         {
             StringBuilder sb = new StringBuilder();
@@ -131,7 +148,7 @@ namespace ericmclachlan.Portfolio
                 for (int w_i = 0; w_i < sentenceLengths[s_i]; w_i++)
                 {
                     string instanceName = instanceNames[w_i];
-                    int goldClass = sentences[s_i][w_i].GoldClass;
+                    int goldClass = sentences[s_i][w_i].Headers[gold_i];
                     string goldClassName = classToClassId[goldClass];
 
                     // sysClass is the tag c for the word w according to the best tag sequence found above.

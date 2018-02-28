@@ -1,11 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ericmclachlan.Portfolio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ericmclachlan.Portfolio.Tests.Properties;
+﻿using ericmclachlan.Portfolio.Tests.Properties;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
 namespace ericmclachlan.Portfolio.Tests
@@ -14,11 +8,37 @@ namespace ericmclachlan.Portfolio.Tests
     public class Command_svm_classifyTests
     {
         [TestMethod()]
-        public void ExecuteCommandTest()
+        public void ExecuteCommand_svm_classify_Test()
         {
-            //string command = @"svm_classify ..\Resources\libSVM_test ..\Resources\libSVM_model sys_output";
-            //string[] args = TextHelper.SplitOnWhitespace(command);
-            //CommandPlatform.Execute(args);
+            try
+            {
+                File.WriteAllText("libSVM_model", Resources.libSVM_model);
+                File.WriteAllText("libSVM_test", Resources.libSVM_test);
+                File.WriteAllText("libSVM_train", Resources.libSVM_train);
+
+                string command;
+                string[] args;
+
+                // Evaluate Training:
+                command = @"svm_classify libSVM_train libSVM_model sys_output_train";
+                args = TextHelper.SplitOnWhitespace(command);
+                CommandPlatform.Execute(args);
+
+                // Evaluate Testing:
+                command = @"svm_classify libSVM_test libSVM_model sys_output_test";
+                args = TextHelper.SplitOnWhitespace(command);
+                CommandPlatform.Execute(args);
+            }
+            finally
+            {
+                // Cleanup
+                if (File.Exists("libSVM_model"))
+                    File.Delete("libSVM_model");
+                if (File.Exists("libSVM_test"))
+                    File.Delete("libSVM_test");
+                if (File.Exists("libSVM_train"))
+                    File.Delete("libSVM_train");
+            }
         }
     }
 }

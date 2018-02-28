@@ -10,6 +10,7 @@ namespace ericmclachlan.Portfolio
         // Members
 
         internal DecisionTreeNode Root { get; private set; }
+        public int Gold_i { get; private set; }
 
         private int _maxDepth;
         private double _minGain;
@@ -17,9 +18,10 @@ namespace ericmclachlan.Portfolio
 
         // Construction
 
-        public DecisionTreeClassifier(List<FeatureVector> trainingVectors, int noOfClasses, int maxDepth, double minGain)
+        public DecisionTreeClassifier(List<FeatureVector> trainingVectors, int gold_i, int noOfClasses, int maxDepth, double minGain)
             : base(trainingVectors, noOfClasses)
         {
+            Gold_i = gold_i;
             _maxDepth = maxDepth;
             _minGain = minGain;
         }
@@ -29,7 +31,7 @@ namespace ericmclachlan.Portfolio
 
         protected override void Train()
         {
-            Root = BuildDecisionTree_Recursive(NoOfClasses, TrainingVectors, 0, _maxDepth, _minGain);
+            Root = BuildDecisionTree_Recursive(NoOfClasses, Gold_i, TrainingVectors, 0, _maxDepth, _minGain);
         }
 
         protected override double[] Test(FeatureVector vector)
@@ -38,14 +40,14 @@ namespace ericmclachlan.Portfolio
             return leaf.GetDistributionByClass();
         }
 
-        private static DecisionTreeNode BuildDecisionTree_Recursive(int noOfCategories, List<FeatureVector> vectors, int depth, int maxDepth, double minGain)
+        private static DecisionTreeNode BuildDecisionTree_Recursive(int noOfCategories, int gold_i, List<FeatureVector> vectors, int depth, int maxDepth, double minGain)
         {
             // Initialize our list of training instances. This collection will be split at each node.
             int bestFeature;
             double informationGain;
             List<FeatureVector>[] vectors_splitByFeature;
-            FindFeatureWithMaxInformationGain(vectors, noOfCategories, out bestFeature, out informationGain, out vectors_splitByFeature);
-            DecisionTreeNode node = new DecisionTreeNode(bestFeature, vectors, noOfCategories);
+            FindFeatureWithMaxInformationGain(vectors, gold_i, noOfCategories, out bestFeature, out informationGain, out vectors_splitByFeature);
+            DecisionTreeNode node = new DecisionTreeNode(bestFeature, gold_i, vectors, noOfCategories);
             //Debug.Assert(vectors_splitByFeature.Length == 2);
             if ((minGain != 0 && informationGain < minGain) || Math.Abs(informationGain) < StatisticsHelper.Significance)
                 return node;
@@ -55,11 +57,11 @@ namespace ericmclachlan.Portfolio
             {
                 if (vectors_splitByFeature[0].Count > 0)
                 {
-                    node.FalseBranch = BuildDecisionTree_Recursive(noOfCategories, vectors_splitByFeature[0], depth + 1, maxDepth, minGain);
+                    node.FalseBranch = BuildDecisionTree_Recursive(noOfCategories, gold_i, vectors_splitByFeature[0], depth + 1, maxDepth, minGain);
                 }
                 if (vectors_splitByFeature[1].Count > 0)
                 {
-                    node.TrueBranch = BuildDecisionTree_Recursive(noOfCategories, vectors_splitByFeature[1], depth + 1, maxDepth, minGain);
+                    node.TrueBranch = BuildDecisionTree_Recursive(noOfCategories, gold_i, vectors_splitByFeature[1], depth + 1, maxDepth, minGain);
                 }
             }
             return node;
@@ -68,6 +70,7 @@ namespace ericmclachlan.Portfolio
         private static void FindFeatureWithMaxInformationGain(
             List<FeatureVector> vectors
             , int noOfCategories
+            , int gold_i
             , out int bestFeature
             , out double maxInformationGain
             , out List<FeatureVector>[] bestSplit)
@@ -115,17 +118,17 @@ namespace ericmclachlan.Portfolio
                 // AND split the data BY FEATURE.
                 foreach (FeatureVector vector in vectors)
                 {
-                    vectors_byClass[vector.GoldClass].Add(vector);
+                    vectors_byClass[vector.Headers[gold_i]].Add(vector);
                     //TODO: It would be nice to make this less binary-feature dependent.
                     if (vector.AllFeatures[featureIndex] > 0)
                     {
                         split[1].Add(vector);
-                        distribution_byClass[vector.GoldClass][1]++;
+                        distribution_byClass[vector.Headers[gold_i]][1]++;
                     }
                     else
                     {
                         split[0].Add(vector);
-                        distribution_byClass[vector.GoldClass][0]++;
+                        distribution_byClass[vector.Headers[gold_i]][0]++;
                     }
                 }
                 double informationGain = StatisticsHelper.CalculateInformationGain(distribution_byClass);
@@ -146,6 +149,7 @@ namespace ericmclachlan.Portfolio
             public DecisionTreeNode Parent { get; private set; }
 
             public readonly int f_i;
+            private readonly int Gold_i;
             public readonly List<FeatureVector> FeatureVectors;
             private readonly int NoOfClasses;
 
@@ -196,9 +200,10 @@ namespace ericmclachlan.Portfolio
 
             // Construction
 
-            public DecisionTreeNode(int featureId, List<FeatureVector> featureVectors, int noOfClasses)
+            public DecisionTreeNode(int featureId, int gold_i, List<FeatureVector> featureVectors, int noOfClasses)
             {
                 f_i = featureId;
+                Gold_i = gold_i;
                 FeatureVectors = featureVectors;
                 NoOfClasses = noOfClasses;
             }
@@ -256,7 +261,7 @@ namespace ericmclachlan.Portfolio
             public double[] GetDistributionByClass()
             {
                 var results = from v in FeatureVectors
-                              group v by v.GoldClass into g
+                              group v by v.Headers[Gold_i] into g
                               orderby g.Key
                               select new { ClassId = g.Key, Count = g.Count() };
                 double[] distribution = new double[NoOfClasses];

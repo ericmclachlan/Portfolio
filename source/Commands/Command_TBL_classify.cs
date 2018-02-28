@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ericmclachlan.Portfolio
+﻿namespace ericmclachlan.Portfolio
 {
     /// <summary>
     /// <para>
@@ -37,13 +35,23 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            // Load the TBL classifier:
-            var classifier = TBLClassifier.LoadModel(model_file);
+            int gold_i = 0;
 
-            // Load the training data:
-            var featureToFeatureId = new ValueIdMapper<string>();
-            var classToClassId = new ValueIdMapper<string>();
-            var testVectors = FeatureVector.LoadFromSVMLight(test_file, featureToFeatureId, classToClassId, FeatureType.Continuous);
+            // Load the TBL classifier:
+            var classifier = TBLClassifier.LoadModel(model_file, gold_i);
+
+            int noOfHeadersColumns = 1;
+            ValueIdMapper<string> featureToFeatureId;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            ValueIdMapper<string> classToClassId;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+
+            int[][] headers;
+            var trainingVectors = FeatureVector.LoadFromSVMLight(test_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
+            var goldClasses = headers[gold_i];
+            
+            // TODO: Where did this implementation go?
+
         }
     }
 }

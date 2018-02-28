@@ -30,19 +30,27 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            var classToclassId = new ValueIdMapper<string>();
-            var featureToFeatureId = new ValueIdMapper<string>();
+            int noOfHeadersColumns = 1;
+            int gold_i = 0;
+            ValueIdMapper<string> featureToFeatureId;
+            ValueIdMapper<string>[] headerToHeaderIds;
+            ValueIdMapper<string> classToClassId;
+            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
 
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, classToclassId, FeatureType.Continuous);
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, classToclassId, FeatureType.Continuous);
+            int[][] headers;
+            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: true);
+            var goldClasses_train = headers[gold_i];
 
-            Classifier classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToclassId.Count);
+            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: true);
+            var goldClasses_test = headers[gold_i];
+
+            Classifier classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToClassId.Count, gold_i);
 
             ConfusionMatrix confusionMatrix;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToclassId, out confusionMatrix);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Training");
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToclassId, out confusionMatrix);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToclassId, "Test");
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToClassId, out confusionMatrix, gold_i);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Training");
+            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToClassId, out confusionMatrix, gold_i);
+            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
         }
     }
 }

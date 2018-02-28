@@ -17,16 +17,18 @@ namespace ericmclachlan.Portfolio
         // Members
 
         private readonly int K;
+        private readonly int Gold_i;
         private readonly SimilarityFunction SimilarityFunction;
         private readonly Func<FeatureVector, FeatureVector, double> distanceFunc;
 
 
         // Construction
 
-        public kNNClassifier(int k, SimilarityFunction similarityFunction, List<FeatureVector> trainingVectors, int noOfClasses)
+        public kNNClassifier(int k, SimilarityFunction similarityFunction, List<FeatureVector> trainingVectors, int noOfClasses, int gold_i)
             : base(trainingVectors, noOfClasses)
         {
             K = k;
+            Gold_i = gold_i;
 
             SimilarityFunction = similarityFunction;
             switch (SimilarityFunction)
@@ -68,11 +70,11 @@ namespace ericmclachlan.Portfolio
                 if (nearestNeighbors.Count == 0 || distance < nearestNeighbors[0].Value)
                 {
                     nearestNeighbors.Insert(0, new IdValuePair<double>(v_i, distance));
-                    votes_c[TrainingVectors[v_i].GoldClass]++;
+                    votes_c[TrainingVectors[v_i].Headers[Gold_i]]++;
                     // If we have too many neighbors, then remove the furthest one.
                     if (nearestNeighbors.Count > K)
                     {
-                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].GoldClass]--;
+                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].Headers[Gold_i]]--;
                         nearestNeighbors.RemoveAt(nearestNeighbors.Count - 1);
                     }
                 }
@@ -83,12 +85,12 @@ namespace ericmclachlan.Portfolio
                     if (insert_b <= K)
                     {
                         nearestNeighbors.Insert(insert_b, newNeighbor);
-                        votes_c[TrainingVectors[v_i].GoldClass]++;
+                        votes_c[TrainingVectors[v_i].Headers[Gold_i]]++;
                     }
                     // If we have too many neighbors, then remove the furthest one.
                     if (nearestNeighbors.Count > K)
                     {
-                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].GoldClass]--;
+                        votes_c[TrainingVectors[nearestNeighbors[nearestNeighbors.Count - 1].Id].Headers[Gold_i]]--;
                         nearestNeighbors.RemoveAt(nearestNeighbors.Count - 1);
                     }
                 }
