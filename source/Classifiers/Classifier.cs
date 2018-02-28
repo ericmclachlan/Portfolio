@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace ericmclachlan.Portfolio
 {
     public abstract class Classifier
     {
-        protected List<FeatureVector> TrainingVectors { get; private set; }
+        public List<FeatureVector> TrainingVectors { get; private set; }
 
         protected Classifier(List<FeatureVector> trainingVectors, int noOfClasses)
         {
             #region Input Validation
-            if (trainingVectors == null)
-                throw new ArgumentNullException("vectors");
-            if (trainingVectors.Count <= 0)
-                throw new ArgumentOutOfRangeException("vectors");
-            if (trainingVectors[0].AllFeatures.Length <= 0)
-                throw new ArgumentOutOfRangeException("vectors");
             if (noOfClasses <= 0)
                 throw new ArgumentOutOfRangeException("noOfClasses");
             #endregion
 
             TrainingVectors = trainingVectors;
-            NoOfFeatures = trainingVectors[0].AllFeatures.Length;
+
             NoOfClasses = noOfClasses;
+
+            if (trainingVectors == null)
+                NoOfFeatures = 0;
+            else
+                NoOfFeatures = trainingVectors[0].AllFeatures.Length;
         }
 
         // Properties
@@ -49,13 +47,13 @@ namespace ericmclachlan.Portfolio
         Dictionary<string, double[]> _cache = new Dictionary<string, double[]>();
 
         /// <summary>Classifies the specified vector and returns a distribution of the probabilities.</summary>
-        public double[] Classify(FeatureVector testVector)
+        public double[] GetDistribution(FeatureVector testVector)
         {
             // TODO: Have the classifier return the non-normalized values.
             // This gives consumers of this method more freedom to do post-processing.
 
             // If training hasn't been done yet, then perform the training now.
-            if (!HasTrained)
+            if (TrainingVectors != null && !HasTrained)
                 PerformTraining();
 
             double[] distribution;
@@ -72,22 +70,19 @@ namespace ericmclachlan.Portfolio
             return distribution;
         }
 
-        /// <summary>Classifies the specified vector and returns a distribution of the probabilities.</summary>
-        protected abstract double[] Test(FeatureVector vector);
-
-
-        // Methods
-
-        /// <summary>Returns a confusion matrix for the given set of vectors.</summary>
-        public ConfusionMatrix GetConfusionMatrix(List<FeatureVector> vectors, int gold_i)
+        /// <summary>Returns the class of each of the <c>vectors</c>, as estimated by the system.</summary>
+        public int[] Classify(IList<FeatureVector> vectors)
         {
-            ConfusionMatrix confusionMatrix = new ConfusionMatrix(NoOfClasses);
+            int[] systemClasses = new int[vectors.Count];
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
-                int systemClass = StatisticsHelper.ArgMax(Classify(vectors[v_i]));
-                confusionMatrix[vectors[v_i].Headers[gold_i], systemClass]++;
+                double[] distribution = GetDistribution(vectors[v_i]);
+                systemClasses[v_i] = StatisticsHelper.ArgMax(distribution);
             }
-            return confusionMatrix;
+            return systemClasses;
         }
+
+        /// <summary>Classifies the specified vector and returns a distribution of the probabilities.</summary>
+        protected abstract double[] Test(FeatureVector vector);
     }
 }
