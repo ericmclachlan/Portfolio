@@ -112,17 +112,16 @@ namespace ericmclachlan.Portfolio
             )
             where T: Classifier, ISaveModel
         {
-            int gold_i = 0;
             TextIdMapper featureToFeatureId = new TextIdMapper();
             TextIdMapper classToClassId = new TextIdMapper();
             TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { classToClassId };
 
             var vectors = vector_file.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Binary);
-            var goldClasses = vector_file.Headers[gold_i];
 
             T classifier = classifierFactory(vectors, classToClassId, featureToFeatureId);
 
-            var systemClasses = classifier.Classify(vectors);
+            //var systemClasses = 
+                classifier.Classify(vectors);
 
             classifier.SaveModel(model_file, classToClassId, featureToFeatureId);
         }

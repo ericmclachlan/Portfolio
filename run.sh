@@ -37,8 +37,9 @@ grep total_sv model.*
 # -------
 
 
-for (( index=1; i <= 5; ++index )); do
+for (( index=1; index <= 5; ++index )); do
 	
-	./svm_classify.sh $exDir/test model.$N[$index] sys_output.$N[$index]
+	./svm_classify.sh $exDir/test model.$index sys.$index > acc.$index
+	cat acc.$index
 
 done

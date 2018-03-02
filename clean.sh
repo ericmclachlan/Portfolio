@@ -14,4 +14,5 @@ rm -fv hw.tar.gz
 rm -fv svm_classify.sh
 rm -f model.*
 rm -f sys.*
+rm -f acc.*
 rm -f output.*

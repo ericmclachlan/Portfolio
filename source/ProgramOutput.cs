@@ -116,7 +116,8 @@ namespace ericmclachlan.Portfolio
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
                 double[] distribution;
-                int sysClass = classifier.Classify(vectors[v_i], out distribution);
+                //int sysClass = 
+                    classifier.Classify(vectors[v_i], out distribution);
                 var distribution_sorted = SearchHelper.GetMaxNItems(distribution.Length, distribution);
 
                 // Output the results:

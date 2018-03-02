@@ -52,13 +52,12 @@ namespace ericmclachlan.Portfolio
 
         private static string[] GetDetails(Classifier classifier, List<FeatureVector> vectors, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)
         {
-            SVMClassifier tblClassifier = (SVMClassifier)classifier;
             var detailsAsText = new string[vectors.Count];
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
-                StringBuilder sb = new StringBuilder();
                 double[] details;
-                int sysClass = classifier.Classify(vectors[v_i], out details);
+                //int sysClass = 
+                    classifier.Classify(vectors[v_i], out details);
                 Debug.Assert(details.Length == 1);
                 detailsAsText[v_i] = string.Format($"{details[0]:0.00000}");
             }

@@ -71,8 +71,8 @@ Get Output
 cd /home2/ericmcl/572/hw8
 lcd C:\Development\git\
 mget -r model.*
-mget -r output.*
 mget -r sys.*
+mget -r acc.*
 
 
 lcd C:\Development\git\Portfolio\
