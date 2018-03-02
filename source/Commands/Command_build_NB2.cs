@@ -5,7 +5,9 @@
         // Members
 
         public string CommandName { get { return "build_NB2"; } }
-        
+
+        #region Parameters
+
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Vector file in text format(cf.train.vectors.txt).")]
         public string training_data_file { get; set; }
 
@@ -24,32 +26,30 @@
         [CommandParameter(Index = 5, Description = "The classification result on the training and test data (cf. sys1).")]
         public string sys_output { get; set; }
 
+        #endregion
+
 
         // Methods
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 1;
-            int gold_i = 0;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
-
-            int[][] headers;
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Continuous, featureDelimiter:' ' , isSortRequiredForFeatures: false);
-            var goldClasses_train = headers[gold_i];
-
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers,  FeatureType.Continuous, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            var goldClasses_test = headers[gold_i];
-
-            Classifier classifier = new NaiveBayesClassifier_Multinomial(class_prior_delta, cond_prob_delta, trainingVectors, classToClassId.Count, gold_i);
-
-            ConfusionMatrix confusionMatrix;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToClassId, out confusionMatrix, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Training");
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToClassId, out confusionMatrix, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
+            FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            FeatureVectorFile vectorFile_test = new FeatureVectorFile(path: test_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            Program.ReportOnTrainingAndTesting(vectorFile_train, vectorFile_test, sys_output
+                    , classifierFactory: (trainingVectors, gold_i, noOfClasses) =>
+                    {
+                        return new NaiveBayesClassifier_Multinomial(
+                            class_prior_delta
+                            , cond_prob_delta
+                            , trainingVectors
+                            , noOfClasses
+                            , gold_i);
+                    }
+                    , getDetailsFunc: (classifier, vectors, classToClassId) =>
+                    {
+                        return ProgramOutput.GetDistributionDetails(classifier, vectors, classToClassId);
+                    }
+                );
         }
     }
 }

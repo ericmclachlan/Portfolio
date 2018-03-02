@@ -15,35 +15,33 @@ namespace ericmclachlan.Portfolio
 
         // Private Members
 
-        private ValueIdMapper<string> classToClassId = new ValueIdMapper<string>();
-        private ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
+        private TextIdMapper classToClassId = new TextIdMapper();
+        private TextIdMapper featureToFeatureId = new TextIdMapper();
 
 
         // Methods
 
         public void ExecuteCommand()
         {
-            var svmLight_data = Console.In.ReadToEnd();
+            // Initialize the text-to-Id mappers:
+            int gold_i = 0;
+            featureToFeatureId = new TextIdMapper();
+            classToClassId = new TextIdMapper();
+            TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { classToClassId };
 
+            // Workaround: Read everything from STDIN to a file. (Files are used as the text source throughout this application.)
+            var svmLight_data = Console.In.ReadToEnd();
             Console.Error.WriteLine("{0} characters of input received.", svmLight_data.Length);
-                
             string tempFile = Path.GetTempFileName();
             int[] goldClasses;
             List<FeatureVector> vectors;
-            int gold_i = 0;
             try
             {
                 File.WriteAllText(tempFile, svmLight_data);
-
-                int noOfHeadersColumns = 1;
-                ValueIdMapper<string> featureToFeatureId;
-                ValueIdMapper<string>[] headerToHeaderIds;
-                ValueIdMapper<string> classToClassId;
-                Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
-
-                int[][] headers;
-                vectors = FeatureVector.LoadFromSVMLight(tempFile, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter:' ' , isSortRequiredForFeatures: false);
-                goldClasses = headers[gold_i];
+                FeatureVectorFile vectorFile = new FeatureVectorFile(path: tempFile, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+                
+                vectors = vectorFile.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Binary);
+                goldClasses = vectorFile.Headers[gold_i];
             }
             finally
             {

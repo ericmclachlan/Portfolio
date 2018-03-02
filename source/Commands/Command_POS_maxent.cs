@@ -11,13 +11,11 @@ namespace ericmclachlan.Portfolio
         // Members
 
         public string CommandName { get { return "beamsearch_pos_maxent"; } }
-
-        public CommandParameterType[] CommandParamaters { get { return new CommandParameterType[] { }; } }
         
         #region Parameters
 
         [CommandParameter(Index = 0, Description = "Vector file in text format.")]
-        public string test_data { get; set; }
+        public string vector_file { get; set; }
 
         [CommandParameter(Index = 1, Description = "This file contains one number per line, which is the length of a sentence.")]
         /// <summary>This file contains one number per line, which is the length of a sentence.</summary>
@@ -48,8 +46,8 @@ namespace ericmclachlan.Portfolio
 
         #endregion
 
-        private ValueIdMapper<string> classToClassId;
-        private ValueIdMapper<string> featureToFeatureId;
+        private TextIdMapper classToClassId;
+        private TextIdMapper featureToFeatureId;
         private MaxEntPOSClassifier classifier;
 
 
@@ -57,24 +55,30 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 2;
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ':', isSortRequired: false);
+
+            // Initialize the text-to-Id mappers:
+            featureToFeatureId = new TextIdMapper();
             int instanceName_i = 0;
             int gold_i = 1;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+            classToClassId = new TextIdMapper();
+            var instanceNameToInstanceNameId = new TextIdMapper();
+            TextIdMapper[] headerToHeaderIds = new TextIdMapper[]
+            {
+                instanceNameToInstanceNameId
+                , classToClassId
+            };
 
             // Read the boundaries:
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
 
             // Read the classifier model:
-            classifier = MaxEntPOSClassifier.LoadModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
+            classifier = MaxEntPOSClassifier.LoadModel(model_file, classToClassId, featureToFeatureId);
 
             // Read the vectors:
-            // Read the vectors:
-            int[][] headers;
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Continuous, featureDelimiter: ':', isSortRequiredForFeatures: false);
-            int[] instanceNameIds = headers[instanceName_i];
-            int[] goldClasses = headers[gold_i];
+            var testVectors = vectorFile.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Continuous);
+            int[] instanceNameIds = vectorFile.Headers[instanceName_i];
+            int[] goldClasses = vectorFile.Headers[gold_i];
 
             // TODO: Neaten this up a little.
             string[] instanceNames = new string[instanceNameIds.Length];
@@ -86,12 +90,6 @@ namespace ericmclachlan.Portfolio
 
             // Generate sys_output:
             var confusionMatrix = GenerateSysOutput(sys_output, instanceNames, testVectors, sentenceLengths, gold_i);
-
-            // Generate acc:
-            Console.WriteLine($"class_num={classToClassId.Count} feat_num={featureToFeatureId.Count}");
-            Console.WriteLine();
-            Console.WriteLine();
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
         }
 
 
@@ -173,7 +171,9 @@ namespace ericmclachlan.Portfolio
             double[][] probs_v_c = new double[words.Count][];
             for (int v_i = 0; v_i < words.Count; v_i++)
             {
-                probs_v_c[v_i] = classifier.Classify(words[v_i]);
+                double[] details;
+                int sysClass = classifier.Classify(words[v_i], out details);
+                probs_v_c[v_i] = details;
 
                 string prevT_name = v_i - 1 < 0 ? "BOS" : classToClassId[c_w[v_i - 1]];
                 string prevT_featureName = string.Format("prevT={0}", prevT_name);

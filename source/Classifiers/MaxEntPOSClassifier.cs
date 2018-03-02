@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace ericmclachlan.Portfolio
 {
@@ -25,7 +26,7 @@ namespace ericmclachlan.Portfolio
             // Nothing special needs to be done.
         }
 
-        protected override double[] Test(FeatureVector vector)
+        protected override int Test(FeatureVector vector, out double[] details)
         {
             double[] distribution = new double[NoOfClasses];
 
@@ -43,7 +44,8 @@ namespace ericmclachlan.Portfolio
                 distribution[c_i] = logProb;
             }
             StatisticsHelper.NormalizeLogs(distribution, Math.E);
-            return distribution;
+            details = distribution;
+            return StatisticsHelper.ArgMax(details);
         }
 
         public double CalculateLogProb_c_f(int c_i, int f_i)
@@ -59,11 +61,12 @@ namespace ericmclachlan.Portfolio
 
         // Static Methods
 
-        public new static MaxEntPOSClassifier LoadModel(string text, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId)
+        public new static MaxEntPOSClassifier LoadModel(string model_file, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)
         {
+            string text = File.ReadAllText(model_file);
             List<double> lambda_c;
             List<FeatureVector> vectors;
-            LoadModel(text, out classToClassId, out featureToFeatureId, out lambda_c, out vectors);
+            LoadModel(text, classToClassId, featureToFeatureId, out lambda_c, out vectors);
 
             return new MaxEntPOSClassifier(vectors, classToClassId.Count, lambda_c.ToArray());
         }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace ericmclachlan.Portfolio
+﻿namespace ericmclachlan.Portfolio
 {
     /// <summary>Provides a commandline interface to the kNN Classifier.</summary>
     internal class Command_build_kNN : ICommand
@@ -30,27 +27,30 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 1;
+            FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: true);
+            FeatureVectorFile vectorFile_test = new FeatureVectorFile(path: test_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: true);
+            
             int gold_i = 0;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+            TextIdMapper featureToFeatureId = new TextIdMapper();
+            TextIdMapper classToClassId = new TextIdMapper();
+            TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { classToClassId };
 
-            int[][] headers;
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: true);
-            var goldClasses_train = headers[gold_i];
+            var trainingVectors = vectorFile_train.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Binary);
+            var goldClasses_train = vectorFile_train.Headers[gold_i];
 
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: true);
-            var goldClasses_test = headers[gold_i];
+            var testVectors = vectorFile_test.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Binary);
+            var goldClasses_test = vectorFile_test.Headers[gold_i];
 
-            Classifier classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToClassId.Count, gold_i);
+            var classifier = new kNNClassifier(k_val, (SimilarityFunction)similarity_func, trainingVectors, classToClassId.Count, gold_i);
 
-            ConfusionMatrix confusionMatrix;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToClassId, out confusionMatrix, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Training");
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToClassId, out confusionMatrix, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
+            var systemClasses_train = classifier.Classify(trainingVectors);
+            var systemClasses_test = classifier.Classify(testVectors);
+
+            var details_train = ProgramOutput.GetDistributionDetails(classifier, trainingVectors, classToClassId);
+            var details_test = ProgramOutput.GetDistributionDetails(classifier, testVectors, classToClassId);
+
+            ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.CreateNew, trainingVectors, classToClassId, goldClasses_train, systemClasses_train, details_train, "training data");
+            ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.Append, testVectors, classToClassId, goldClasses_test, systemClasses_test, details_test, "test data");
         }
     }
 }

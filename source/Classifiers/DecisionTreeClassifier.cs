@@ -34,10 +34,11 @@ namespace ericmclachlan.Portfolio
             Root = BuildDecisionTree_Recursive(NoOfClasses, Gold_i, TrainingVectors, 0, _maxDepth, _minGain);
         }
 
-        protected override double[] Test(FeatureVector vector)
+        protected override int Test(FeatureVector vector, out double[] details)
         {
             var leaf = Root.FindLeaf(vector);
-            return leaf.GetDistributionByClass();
+            details = leaf.GetDistributionByClass();
+            return StatisticsHelper.ArgMax(details);
         }
 
         private static DecisionTreeNode BuildDecisionTree_Recursive(int noOfCategories, int gold_i, List<FeatureVector> vectors, int depth, int maxDepth, double minGain)
@@ -211,7 +212,7 @@ namespace ericmclachlan.Portfolio
 
             // Methods
 
-            internal string GetModelAsText(ValueIdMapper<string> classToClassId, ValueIdMapper<string> wordToWordId)
+            internal string GetModelAsText(TextIdMapper classToClassId, TextIdMapper wordToWordId)
             {
                 /// TODO: Move a serialization method to the classifier class.
                 StringBuilder sb = new StringBuilder();
@@ -219,7 +220,7 @@ namespace ericmclachlan.Portfolio
                 return sb.ToString();
             }
 
-            private void Serialize_Recursive(StringBuilder sb, ValueIdMapper<string> classToClassId, ValueIdMapper<string> wordToWordId, int depth)
+            private void Serialize_Recursive(StringBuilder sb, TextIdMapper classToClassId, TextIdMapper wordToWordId, int depth)
             {
                 // If is is a leaf node, ...
                 if (TrueBranch == null && FalseBranch == null)
@@ -273,7 +274,7 @@ namespace ericmclachlan.Portfolio
                 return distribution;
             }
 
-            public string GetPath(ValueIdMapper<string> wordToWordId)
+            public string GetPath(TextIdMapper wordToWordId)
             {
                 if (Parent == null)
                 {

@@ -3,9 +3,18 @@ using System.Collections.Generic;
 
 namespace ericmclachlan.Portfolio
 {
+    /// <summary>
+    /// The ClassificationDetails class stores the results of classification. Both the class itself and details provided by the model.
+    /// </summary>
+    public class ClassificationDetails
+    {
+        public int Class { get; set; }
+        public double[] Details { get; set; }
+    }
+
     public abstract class Classifier
     {
-        public List<FeatureVector> TrainingVectors { get; private set; }
+        protected List<FeatureVector> TrainingVectors { get; private set; }
 
         protected Classifier(List<FeatureVector> trainingVectors, int noOfClasses)
         {
@@ -44,45 +53,55 @@ namespace ericmclachlan.Portfolio
             HasTrained = true;
         }
 
-        Dictionary<string, double[]> _cache = new Dictionary<string, double[]>();
+        Dictionary<string, ClassificationDetails> _cache = new Dictionary<string, ClassificationDetails>();
 
-        /// <summary>Classifies the specified vector and returns a distribution of the probabilities.</summary>
-        public double[] GetDistribution(FeatureVector testVector)
+        /// <summary>
+        /// Returns the system predicted class for the specified <c>vector</c> and any details received from the classifier.
+        /// </summary>
+        public int Classify(FeatureVector vector, out double[] details)
         {
-            // TODO: Have the classifier return the non-normalized values.
-            // This gives consumers of this method more freedom to do post-processing.
-
             // If training hasn't been done yet, then perform the training now.
-            if (TrainingVectors != null && !HasTrained)
+            if (!HasTrained)
                 PerformTraining();
 
-            double[] distribution;
             // Check the cache.
-            string cacheKey = testVector.ToString();
-            if (_cache.TryGetValue(cacheKey, out distribution))
-                return distribution;
+            ClassificationDetails classDetails;
+            string cacheKey = vector.ToString();
+            if (_cache.TryGetValue(cacheKey, out classDetails))
+            {
+                details = classDetails.Details;
+                return classDetails.Class;
+            }
 
             // Calculate the distribution
-            distribution = Test(testVector);
+            classDetails = new ClassificationDetails();
+            classDetails.Class = Test(vector, out details);
+            classDetails.Details = details;
 
             // Cache the distribution for later use.
-            _cache[cacheKey] = distribution;
-            return distribution;
+            _cache[cacheKey] = classDetails;
+            return classDetails.Class;
         }
 
-        /// <summary>Returns the class of each of the <c>vectors</c>, as estimated by the system.</summary>
+        /// <summary>Returns the system predicted class for the specified <c>vector</c>.</summary>
+        public int Classify(FeatureVector vector)
+        {
+            double[] details;
+            return Classify(vector, out details);
+        }
+
+        /// <summary>Returns the class of each of the <c>vectors</c>, as predicted by the system.</summary>
         public int[] Classify(IList<FeatureVector> vectors)
         {
             int[] systemClasses = new int[vectors.Count];
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
-                double[] distribution = GetDistribution(vectors[v_i]);
-                systemClasses[v_i] = StatisticsHelper.ArgMax(distribution);
+                systemClasses[v_i] = Classify(vectors[v_i]);
             }
             return systemClasses;
         }
 
         /// <summary>Classifies the specified vector and returns a distribution of the probabilities.</summary>
-        protected abstract double[] Test(FeatureVector vector);
+        protected abstract int Test(FeatureVector vector, out double[] details);
     }
 }

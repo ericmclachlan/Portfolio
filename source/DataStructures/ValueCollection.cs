@@ -23,8 +23,11 @@ namespace ericmclachlan.Portfolio
         {
             get
             {
-                Debug.Assert(_storage.ContainsKey(id));
-                return _storage[id];
+                double val;
+                if (_storage.TryGetValue(id, out val))
+                    return _storage[id];
+                else
+                    return 0D;
             }
             set
             {

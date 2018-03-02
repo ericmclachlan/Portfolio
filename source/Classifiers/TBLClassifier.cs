@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace ericmclachlan.Portfolio
 {
-    public class TBLClassifier : Classifier
+    public class TBLClassifier : Classifier, ISaveModel
     {
         // Properties
 
@@ -130,16 +130,18 @@ namespace ericmclachlan.Portfolio
             return bestT;
         }
 
-        protected override double[] Test(FeatureVector vector)
+        protected override int Test(FeatureVector vector, out double[] details)
         {
             int sysClass = _defaultClass;
             foreach (Transformation t in _transformations)
             {
                 sysClass = Transform(sysClass, t, vector);
             }
+            // TODO: Make details a non-double[].
             double[] results = new double[NoOfClasses];
             results[sysClass] = 1D;
-            return results;
+            details = results;
+            return sysClass;
         }
 
         private int[] ApplyInitialCategorization(params FeatureVector[] vectors)
@@ -154,7 +156,7 @@ namespace ericmclachlan.Portfolio
         }
 
         /// <summary>Saves this model to the specifiedl location.</summary>
-        public void SaveModel(string model_file, ValueIdMapper<string> classToClassId, ValueIdMapper<string> featureToFeatureId)
+        public void SaveModel(string model_file, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)
         {
             // Make sure that training has been performed.
             if (!HasTrained)
@@ -179,7 +181,7 @@ namespace ericmclachlan.Portfolio
         }
 
         /// <summary>Loads a TBL classidier from the model_file at the specifiedl location.</summary>
-        public static TBLClassifier LoadModel(string model_file, ValueIdMapper<string> classToClassId, ValueIdMapper<string> featureToFeatureId, int N, int gold_id)
+        public static TBLClassifier LoadModel(string model_file, TextIdMapper classToClassId, TextIdMapper featureToFeatureId, int N, int gold_i)
         {
             int defaultClass;
             List<Transformation> transformations = new List<Transformation>();

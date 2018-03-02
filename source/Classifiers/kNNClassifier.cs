@@ -56,7 +56,7 @@ namespace ericmclachlan.Portfolio
             // No other specific training needs to be done as almost everything is calculated during the testing phase.
         }
 
-        protected override double[] Test(FeatureVector vector)
+        protected override int Test(FeatureVector vector, out double[] details)
         {
             double[] votes_c = new double[NoOfClasses];
             var nearestNeighbors = new List<IdValuePair<double>>();
@@ -98,7 +98,9 @@ namespace ericmclachlan.Portfolio
             }
             if (nearestNeighbors.Count < K)
                 Console.Error.WriteLine("Warning: K nearest neighbors could not be found.");
-            return StatisticsHelper.ConvertToDistribution(votes_c);
+
+            details = StatisticsHelper.ConvertToDistribution(votes_c);
+            return StatisticsHelper.ArgMax(details);
         }
 
 
@@ -118,37 +120,12 @@ namespace ericmclachlan.Portfolio
         private double CalculateCosineSimilarity(FeatureVector v1, FeatureVector v2)
         {
             double sumOfTheProducts = 0;
-
-            int w1_i = 0;
-            int w2_i= 0;
-            while (w1_i < v1.UsedFeatures.Length || w2_i < v2.UsedFeatures.Length)
+            foreach (int f_i in v1.FeatureIntersectionWith(v2))
             {
-                if (w1_i < v1.UsedFeatures.Length && w2_i < v2.UsedFeatures.Length)
-                {
-                    if (v1.UsedFeatures[w1_i] == v2.UsedFeatures[w2_i])
-                    {
-                        int f_i = v1.UsedFeatures[w1_i++];
-                        w2_i++;
-                        // Ignore OOV.
-                        if (f_i >= NoOfFeatures)
-                            continue;
-                        sumOfTheProducts += (v1.AllFeatures[f_i] * v2.AllFeatures[f_i]);
-                    }
-                    else if (v1.UsedFeatures[w1_i] < v2.UsedFeatures[w2_i])
-                        w1_i++;
-                    else
-                    {
-                        //Debug.Assert(v2.UsedFeatures[w2_i] < v1.UsedFeatures[w1_i]);
-                        w2_i++;
-                    }
-                }
-                else if (w1_i < v1.UsedFeatures.Length)
-                    w1_i++;
-                else
-                {
-                    //Debug.Assert(w2_i < v2.UsedFeatures.Length);
-                    w2_i++;
-                }
+                // Ignore OOV.
+                if (f_i >= NoOfFeatures)
+                    continue;
+                sumOfTheProducts += (v1.AllFeatures[f_i] * v2.AllFeatures[f_i]);
             }
 
             // Get the sum of each vector's values, squared.
@@ -170,44 +147,18 @@ namespace ericmclachlan.Portfolio
 
 
         /// <summary>Calculates the Squared Euclidean Distance between two vectors.</summary>
-        public double CalculateAbsSquaredEuclideanDistance(FeatureVector v1, FeatureVector v2)
+        private double CalculateAbsSquaredEuclideanDistance(FeatureVector v1, FeatureVector v2)
         {
             double distance = 0;
-            int w1_i = 0;
-            int w2_i = 0;
-            while (w1_i < v1.UsedFeatures.Length || w2_i < v2.UsedFeatures.Length)
+            foreach (int f_i in v1.FeatureUnionWith(v2))
             {
-                int f_i;
-                if (w1_i < v1.UsedFeatures.Length && w2_i < v2.UsedFeatures.Length)
-                {
-                    if (v1.UsedFeatures[w1_i] == v2.UsedFeatures[w2_i])
-                    {
-                        f_i = v1.UsedFeatures[w1_i++];
-                        w2_i++;
-                    }
-                    else if (v1.UsedFeatures[w1_i] < v2.UsedFeatures[w2_i])
-                        f_i = v1.UsedFeatures[w1_i++];
-                    else
-                    {
-                        //Debug.Assert(v2.UsedFeatures[w2_i] < v1.UsedFeatures[w1_i]);
-                        f_i = v2.UsedFeatures[w2_i++];
-                    }
-                }
-                else if (w1_i < v1.UsedFeatures.Length)
-                    f_i = v1.UsedFeatures[w1_i++];
-                else
-                {
-                    //Debug.Assert(w2_i < v2.UsedFeatures.Length);
-                    f_i = v2.UsedFeatures[w2_i++];
-                }
                 // Ignore OOV.
                 if (f_i >= NoOfFeatures)
                     continue;
                 double diff = (v2.AllFeatures[f_i] - v1.AllFeatures[f_i]);
                 distance += (diff * diff);
             }
-            double result = distance;
-            return result;
+            return distance;
         }
     }
 }

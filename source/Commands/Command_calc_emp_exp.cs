@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 namespace ericmclachlan.Portfolio
 {
@@ -11,27 +10,32 @@ namespace ericmclachlan.Portfolio
 
         public string CommandName { get { return "calc_emp_exp"; } }
 
-        private ValueIdMapper<string> classToClassId = new ValueIdMapper<string>();
-        private ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
+        private TextIdMapper classToClassId = new TextIdMapper();
+        private TextIdMapper featureToFeatureId = new TextIdMapper();
         int gold_i = 0;
 
-        [CommandParameter(Index = 0, Type = CommandParameterType.InputFile)]
-        public string training_data_file { get; set; }
+        #region Parameters
 
+        [CommandParameter(Index = 0, Type = CommandParameterType.InputFile)]
+        public string vector_file { get; set; }
+
+        #endregion
 
 
         // Methods
 
         public void ExecuteCommand()
         {
-            // Load the training file.
-            int noOfHeadersColumns = 1;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
 
-            int[][] headers;
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            var goldClasses = headers[gold_i];
+            // Load the training file.
+            int gold_i = 0;
+            TextIdMapper featureToFeatureId = new TextIdMapper();
+            TextIdMapper classToClassId = new TextIdMapper();
+            TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { classToClassId };
+
+            var trainingVectors = vectorFile.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Binary);
+            var goldClasses = vectorFile.Headers[gold_i];
 
             double[,] observation, expectation;
             CalculateObservationAndEmpiricalExpectation(trainingVectors, out observation, out expectation);

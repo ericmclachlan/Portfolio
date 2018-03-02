@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 namespace ericmclachlan.Portfolio
 {
@@ -11,30 +10,33 @@ namespace ericmclachlan.Portfolio
 
         public string CommandName { get { return "calc_model_exp"; } }
 
-        private ValueIdMapper<string> classToClassId = new ValueIdMapper<string>();
-        private ValueIdMapper<string> featureToFeatureId = new ValueIdMapper<string>();
-        
+        private TextIdMapper classToClassId = new TextIdMapper();
+        private TextIdMapper featureToFeatureId = new TextIdMapper();
+
+        #region Parameters
+
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile)]
         public string training_data_file { get; set; }
 
         [CommandParameter(Index = 1, Type = CommandParameterType.InputFile, IsRequired = false)]
         public string model_file { get; set; }
 
+        #endregion
+
 
         // Methods
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 1;
+            FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            
             int gold_i = 0;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+            TextIdMapper featureToFeatureId = new TextIdMapper();
+            TextIdMapper classToClassId = new TextIdMapper();
+            TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { classToClassId };
 
-            int[][] headers;
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            var goldClasses_train = headers[gold_i];
+            var trainingVectors = vectorFile_train.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Binary);
+            var goldClasses_train = vectorFile_train.Headers[gold_i];
 
             // model_file is optional. 
             Func<int, FeatureVector, double> calculate_Prob_c_v;
@@ -47,8 +49,14 @@ namespace ericmclachlan.Portfolio
             // If it is given, it is used to calculate p(y|xi). 
             else
             {
-                MaxEntClassifier classifier = MaxEntClassifier.LoadModel(model_file, out classToClassId, out featureToFeatureId);
-                calculate_Prob_c_v = (c_i, v) => { return classifier.Classify(v)[c_i]; };
+                MaxEntClassifier classifier = MaxEntClassifier.LoadModel(model_file, classToClassId, featureToFeatureId);
+                calculate_Prob_c_v =
+                    (c_i, v) => 
+                    {
+                        double[] details;
+                        int sysClass = classifier.Classify(v, out details);
+                        return details[c_i];
+                    };
             }
 
             double[,] expectation = CalculateModelExpectation(trainingVectors, calculate_Prob_c_v);

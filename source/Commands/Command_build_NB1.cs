@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace ericmclachlan.Portfolio
+﻿namespace ericmclachlan.Portfolio
 {
     internal class Command_build_NB1 : ICommand
     {
@@ -33,28 +29,23 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 1;
-            int gold_i = 0;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
-
-            int[][] headers;
-            var trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter:' ' , isSortRequiredForFeatures: false);
-            var goldClasses_train = headers[gold_i];
-
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter:' ' , isSortRequiredForFeatures: false);
-            var goldClasses_test = headers[gold_i];
-
-            Classifier classifier = new NaiveBayesClassifier_MultivariateBernoulli(class_prior_delta, cond_prob_delta, trainingVectors, classToClassId.Count, gold_i);
-
-            ConfusionMatrix confusionMatrix_training;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "training data", classifier, trainingVectors, classToClassId, out confusionMatrix_training, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix_training, classToClassId, sys_output);
-            ConfusionMatrix confusionMatrix_test;
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.Append, "test data", classifier, testVectors, classToClassId, out confusionMatrix_test, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix_test, classToClassId, "Test");
+            FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            FeatureVectorFile vectorFile_test = new FeatureVectorFile(path: test_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            Program.ReportOnTrainingAndTesting(vectorFile_train, vectorFile_test, sys_output
+                    , classifierFactory: (trainingVectors, gold_i, noOfClasses) =>
+                    {
+                        return new NaiveBayesClassifier_MultivariateBernoulli(
+                            class_prior_delta
+                            , cond_prob_delta
+                            , trainingVectors
+                            , noOfClasses
+                            , gold_i);
+                    }
+                    , getDetailsFunc: (classifier, vectors, classToClassId) =>
+                    {
+                        return ProgramOutput.GetDistributionDetails(classifier, vectors, classToClassId);
+                    }
+                );
         }
     }
 }

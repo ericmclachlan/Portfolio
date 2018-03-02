@@ -15,6 +15,8 @@ namespace ericmclachlan.Portfolio
 
         private static readonly Dictionary<char, char> _letters;
 
+        public static readonly char[] WhiteSpace = new char[] { ' ', '\t' };
+
         // Construction
 
         static TextHelper()
@@ -41,7 +43,7 @@ namespace ericmclachlan.Portfolio
 
         public static string[] SplitOnWhitespace(string text)
         {
-            return text.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return text.Split(WhiteSpace, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static string[] SplitOnWhitespaceOr(string text, params char[] delimiters)

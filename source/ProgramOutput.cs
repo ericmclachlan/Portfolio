@@ -21,7 +21,7 @@ namespace ericmclachlan.Portfolio
         /// <param name="confusionMatrix">The confusion matrix to report.</param>
         /// <param name="classToclassId">A lookup that maps class identifiers to their text representations.</param>
         /// <param name="reportTitle">A text description of the set of data being classfied.</param>
-        private static double ReportAccuracy(ConfusionMatrix confusionMatrix, ValueIdMapper<string> classToclassId, string reportTitle)
+        private static double ReportAccuracy(ConfusionMatrix confusionMatrix, TextIdMapper classToclassId, string reportTitle)
         {
             // Write column headers:
             Console.WriteLine("Confusion matrix for '{0}':", reportTitle);
@@ -59,21 +59,21 @@ namespace ericmclachlan.Portfolio
         /// <summary>
         /// Outputs the classification result as follows: {instanceName} {gold_class_label} {sys_class_label} {probability}.
         /// </summary>
-        /// <param name="sys_output">The location of the sys_output file.</param>
+        /// <param name="output_file">The location of the sys_output file.</param>
         /// <param name="vectors">A collection of vectors to classify.</param>
         /// <param name="classToclassId">A class for providing human-readable class labels.</param>
         /// <param name="heading">Usually, "Training" or "Test".</param>
         internal static void GenerateSysOutput(
-            string sys_output
+            string output_file
             , FileCreationMode fileCreationMode
             , List<FeatureVector> vectors
-            , ValueIdMapper<string> classToclassId
+            , TextIdMapper classToclassId
+            , int[] goldClasses
             , int[] systemClasses
             , string[] details
             , string heading
             )
         {
-
             Debug.Assert(vectors != null && vectors.Count > 0);
             Debug.Assert(systemClasses != null && systemClasses.Length == vectors.Count);
 
@@ -82,8 +82,8 @@ namespace ericmclachlan.Portfolio
             {
                 switch (fileCreationMode)
                 {
-                    case FileCreationMode.CreateNew: writer = File.CreateText(sys_output); break;
-                    case FileCreationMode.Append:    writer = File.AppendText(sys_output); break;
+                    case FileCreationMode.CreateNew: writer = File.CreateText(output_file); break;
+                    case FileCreationMode.Append:    writer = File.AppendText(output_file); break;
                     default: throw new Exception($"Internal error: ProgramOutput.FileCreationMode with value '{fileCreationMode}' is not supported by this version of the application.");
                 }
 
@@ -93,13 +93,12 @@ namespace ericmclachlan.Portfolio
                 var confusionMatrix = new ConfusionMatrix(classToclassId.Count);
                 for (int v_i = 0; v_i < vectors.Count; v_i++)
                 {
-                    string instanceName = string.Format($"file{v_i}");
-                    string trueLabel = classToclassId[vectors[v_i].GoldClass];
+                    string trueLabel = classToclassId[goldClasses[v_i]];
                     string sysLabel = classToclassId[systemClasses[v_i]];
 
-                    // Output the {instanceName} {true_class_label} {details}
-                    writer.WriteLine($"{instanceName}\t{trueLabel}\t{sysLabel}\t{details[v_i]}");
-                    confusionMatrix[vectors[v_i].GoldClass, systemClasses[v_i]]++;
+                    // Output the {true_class_label} {details}
+                    writer.WriteLine($"{trueLabel}\t{sysLabel}\t{details[v_i]}");
+                    confusionMatrix[goldClasses[v_i], systemClasses[v_i]]++;
                 }
                 writer.WriteLine();
                 ReportAccuracy(confusionMatrix, classToclassId, heading);
@@ -111,12 +110,13 @@ namespace ericmclachlan.Portfolio
             }
         }
 
-        public static string[] GetDistributionDetails(Classifier classifier, List<FeatureVector> vectors, ValueIdMapper<string> classToClassId)
+        public static string[] GetDistributionDetails(Classifier classifier, List<FeatureVector> vectors, TextIdMapper classToClassId)
         {
             string[] details = new string[vectors.Count];
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
-                double[] distribution = classifier.GetDistribution(vectors[v_i]);
+                double[] distribution;
+                int sysClass = classifier.Classify(vectors[v_i], out distribution);
                 var distribution_sorted = SearchHelper.GetMaxNItems(distribution.Length, distribution);
 
                 // Output the results:

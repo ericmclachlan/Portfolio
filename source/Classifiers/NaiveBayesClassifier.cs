@@ -83,7 +83,7 @@ namespace ericmclachlan.Portfolio
             }
         }
 
-        protected override double[] Test(FeatureVector vector)
+        protected override int Test(FeatureVector vector, out double[] details)
         {
             // classify(v) = argmax(P(c)P(v|c)) = argmax_c(prob_c * prob_v_c)
             double[] v_logProb_c = new double[NoOfClasses];
@@ -93,7 +93,8 @@ namespace ericmclachlan.Portfolio
             }
             // Convert back from log to decimal format.
             StatisticsHelper.NormalizeLogs(v_logProb_c, 10);
-            return v_logProb_c;
+            details = v_logProb_c;
+            return StatisticsHelper.ArgMax(details);
         }
     }
 }

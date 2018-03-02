@@ -97,14 +97,16 @@
     <Compile Include="Commands\Command_POS_maxent.cs" />
     <Compile Include="Commands\Command_beamsearch_maxent.cs" />
     <Compile Include="DataStructures\ConfusionMatrix.cs" />
+    <Compile Include="DataStructures\FeatureVectorFile.cs" />
     <Compile Include="Helpers\PermutationHelper.cs" />
     <Compile Include="Classifiers\SVMClassifier.cs" />
     <Compile Include="DataStructures\ValueCollection.cs" />
-    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="DataStructures\IdValuePair.cs" />
     <Compile Include="Classifiers\kNNClassifier.cs" />
     <Compile Include="Classifiers\MaxEntPOSClassifier.cs" />
     <Compile Include="Classifiers\MaxEntClassifier.cs" />
+    <Compile Include="Interfaces\ISaveModel.cs" />
     <Compile Include="ProgramOutput.cs" />
     <Compile Include="Commands\Command_rank_feat_by_chi_square.cs" />
     <Compile Include="Helpers\SearchHelper.cs" />

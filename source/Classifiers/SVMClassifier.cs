@@ -9,117 +9,250 @@ namespace ericmclachlan.Portfolio
     /// This is a classifier that uses a SVM (support vector machine) to determine an optimal hyperplane 
     /// for discriminating between two classes.
     /// </summary>
-    public class SVMClassifier : Classifier
+    public abstract class SVMClassifier : Classifier
     {
-        public enum SVMType
-        {
-            c_svc
-        }
-        public enum KernelType
+        // TODO: Rename SVMClassifier to LibSVMClassifier.
+        public enum LibSVM_KernelType
         {
             linear,
             polynomial,
-            RBF,
+            rbf,
             sigmoid
         }
 
-        public class SVMHeader
+        private readonly double Rho;
+        protected readonly double[] Weights;
+
+
+        protected SVMClassifier(List<FeatureVector> modelVectors, double[] weights, double rho)
+            : base(modelVectors, noOfClasses:2)
         {
-            // Members
+            this.Rho = rho;
+            this.Weights = weights;
+        }
 
-            public SVMType svm_type;
-            public KernelType kernel_type;
-            public int nr_class;
-            public int total_sv;
-            public double rho;
-            public string[] labels;
-            public int[] nr_sv;
-
-            // Methods
-
-            public static SVMHeader Load(IList<string> lines)
+        protected override int Test(FeatureVector vector, out double[] details)
+        {
+            double sum = 0;
+            for (int i = 0; i < TrainingVectors.Count; i++)
             {
-                SVMHeader header = new SVMHeader();
-
-                header.svm_type = (SVMType)Enum.Parse(typeof(SVMType), ReadExpectedParameter("svm_type", lines[0]));
-                header.kernel_type = (KernelType)Enum.Parse(typeof(KernelType), ReadExpectedParameter("kernel_type", lines[1]));
-                header.nr_class = int.Parse(ReadExpectedParameter("nr_class", lines[2]));
-                header.total_sv = int.Parse(ReadExpectedParameter("total_sv", lines[3]));
-                header.rho = double.Parse(ReadExpectedParameter("rho", lines[4]));
-                header.labels = TextHelper.SplitOnWhitespace(ReadExpectedParameter("label", lines[5]));
-                header.nr_sv = new int[header.labels.Length];
-                string[] nr_sv_asText = TextHelper.SplitOnWhitespace(ReadExpectedParameter("nr_sv", lines[6]));
-                Debug.Assert(nr_sv_asText.Length == header.labels.Length);
-                for (int i = 0; i < nr_sv_asText.Length; i++)
-                {
-                    header.nr_sv[i] = int.Parse(nr_sv_asText[i]);
-                }
-                Debug.Assert(lines[7] == "SV");
-                return header;
+                // Consider each feature defined for either vector OR TrainingVectors[i]:
+                sum += (Weights[i] * KernelFunc(vector, TrainingVectors[i]));
             }
-        }
+            sum -= Rho;
 
-        private SVMHeader _header;
-        private double[] _alphas;
+            details = new double[] { sum };
 
-        protected SVMClassifier(SVMHeader header, List<FeatureVector> trainingVectors, double[] alphas)
-            : base(trainingVectors, noOfClasses:2)
-        {
-            _alphas = alphas;
-            _header = header;
-            // Nothing else needs to be done for now.
-        }
-
-        protected override double[] Test(FeatureVector vector)
-        {
-            return null;
-            //throw new NotImplementedException();
+            // Return the system classification as a distribution.
+            if (sum > 0)
+                return 0;
+            else if (sum < 0)
+                return 1;
+            else
+            {
+                Console.Error.WriteLine("Warning: Ambiguous classification of vector. Reverted to first class bias.");
+                return 0;
+            }
         }
 
         protected override void Train()
         {
-            //throw new NotImplementedException();
+            // There is no training here as the model should be loaded from a file.
         }
 
-        internal static Classifier LoadModel(string model_file, ValueIdMapper<string> classToclassId, ValueIdMapper<string> featureToFeatureId)
+        public static Classifier LoadModel(FeatureVectorFile vectorFile_model, TextIdMapper classToclassId, TextIdMapper featureToFeatureId, int alphaColumn_i, TextIdMapper[] headerToHeaderIds)
         {
-            List<string> lines = new List<string>(File.ReadAllLines(model_file));
+            // Peek into the file to see what type of SVM model this is:
+            int i = 0;
+            LibSVM_KernelType kernel_type = LibSVM_KernelType.linear;
+            foreach (var line in File.ReadLines(vectorFile_model.Path))
+            {
+                if (i == 0)
+                    Debug.Assert(line.StartsWith("svm_type") && line.EndsWith("c_svc"));
+                else if (i == 1)
+                    kernel_type = (LibSVM_KernelType)Enum.Parse(typeof(LibSVM_KernelType), line.Substring(line.LastIndexOfAny(TextHelper.WhiteSpace)));
+                else
+                    break;
+                i++;
+            }
 
-            // Read the model file header:
-            SVMHeader svmHeader = SVMHeader.Load(lines);
-
-            // Remove the header lines:
-            lines.RemoveRange(0, 8);
+            // Override the number of header rows according to the model type.
+            switch (kernel_type)
+            {
+                case LibSVM_KernelType.linear: vectorFile_model.NoOfHeaderRows = 8; break;
+                case LibSVM_KernelType.polynomial: vectorFile_model.NoOfHeaderRows = 11; break;
+                case LibSVM_KernelType.rbf: vectorFile_model.NoOfHeaderRows = 9; break;
+                case LibSVM_KernelType.sigmoid: vectorFile_model.NoOfHeaderRows = 10; break;
+                default: throw new NotImplementedException();
+            }
 
             // Read each of the support vectors:
-            int noOfHeadersColumns = 1;
-            int alpha_i = 0;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            featureToFeatureId = new ValueIdMapper<string>();
-            headerToHeaderIds = new ValueIdMapper<string>[noOfHeadersColumns];
-            for (int header_i = 0; header_i < noOfHeadersColumns; header_i++)
+            var modelVectors = vectorFile_model.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Continuous);
+
+            // Read the model file header:
+            double rho = 0;
+            double gamma = 0;
+            double coef = 0;
+            double degree = 0;
+
+            Debug.Assert(vectorFile_model.HeaderRows[vectorFile_model.NoOfHeaderRows - 1] == "SV");
+            for (i = 2; i < vectorFile_model.NoOfHeaderRows - 1; i++)
             {
-                headerToHeaderIds[header_i] = new ValueIdMapper<string>();
+                string line = vectorFile_model.HeaderRows[i];
+
+                // Ignore non-informative meta-data:
+                if (line.StartsWith("nr_class") || line.StartsWith("total_sv") || line.StartsWith("label") || line.StartsWith("nr_sv"))
+                    continue;
+
+                string text = line.Substring(line.LastIndexOfAny(TextHelper.WhiteSpace));
+                if (line.StartsWith("rho"))
+                    rho = double.Parse(text);
+                else if (line.StartsWith("gamma"))
+                    gamma = double.Parse(text);
+                else if (line.StartsWith("degree"))
+                    degree = double.Parse(text);
+                else if (line.StartsWith("coef"))
+                    coef = double.Parse(text);
+                else
+                    throw new NotImplementedException();
             }
 
-            ValueIdMapper<string> alphasToAlphaId = headerToHeaderIds[alpha_i];
-            int[][] headers;
-            var vectors = FeatureVector.LoadFromSVMLight(lines, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Continuous, featureDelimiter: ':', isSortRequiredForFeatures: false);
-            double[] alphas = new double[vectors.Count];
-            for (int i = 0; i < alphas.Length; i++)
+            double[] weights = new double[modelVectors.Count];
+            for (i = 0; i < weights.Length; i++)
             {
-                alphas[i] = Convert.ToDouble(alphasToAlphaId[headers[alpha_i][i]]);
+                weights[i] = Convert.ToDouble(headerToHeaderIds[alphaColumn_i][vectorFile_model.Headers[alphaColumn_i][i]]);
             }
 
-            return new SVMClassifier(svmHeader, vectors, alphas);
+            switch (kernel_type)
+            {
+                case LibSVM_KernelType.linear:
+                    return new LibSVMClassifier_Linear(modelVectors, weights, rho);
+                case LibSVM_KernelType.polynomial:
+                    return new LibSVMClassifier_Polynomial(modelVectors, weights, rho, degree, gamma, coef);
+                case LibSVM_KernelType.rbf:
+                    return new LibSVMClassifier_RBF(modelVectors, weights, rho, gamma);
+                case LibSVM_KernelType.sigmoid:
+                    return new LibSVMClassifier_Sigmoid(modelVectors, weights, rho, gamma, coef);
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
-        private static string ReadExpectedParameter(string name, string text)
+        /// <summary>Returns an indication of similarity between vector <c>v1</c> and <c>v2</c>.</summary>
+        protected abstract double KernelFunc(FeatureVector v1, FeatureVector v2);
+
+        private double RBFSimilarity(FeatureVector v1, FeatureVector v2, int f_i)
         {
-            int index = text.IndexOf(name);
-            Debug.Assert(index >= 0);
-            Debug.Assert(char.IsWhiteSpace(text[index + name.Length]));
-            return text.Substring(index + name.Length + 1);
+            return 0D;
+        }
+
+        private double SigmoidSimilarity(FeatureVector v1, FeatureVector v2, int f_i)
+        {
+            return 0D;
+        }
+    }
+
+    public class LibSVMClassifier_Linear : SVMClassifier
+    {
+        public LibSVMClassifier_Linear(List<FeatureVector> modelVectors, double[] weights, double rho)
+            : base(modelVectors, weights, rho)
+        {
+            // Nothing else needs to be done.
+
+        }
+
+        /// <summary>
+        /// <para>Returns an indication of similarity between vector <c>v1</c> and <c>v2</c>.</para>
+        /// <para>In this case, we use a simple linear dot product.</para>
+        /// </summary>
+        protected override double KernelFunc(FeatureVector v1, FeatureVector v2)
+        {
+            double result = 0;
+            foreach (int f_i in v2.FeatureUnionWith(v2))
+                result += v1.AllFeatures[f_i] * v2.AllFeatures[f_i];
+            return result;
+        }
+    }
+
+    public class LibSVMClassifier_Polynomial : SVMClassifier
+    {
+        private readonly double Degree;
+        private readonly double Gamma;
+        private readonly double Coef;
+
+        public LibSVMClassifier_Polynomial(List<FeatureVector> modelVectors, double[] weights, double rho, double degree, double gamma, double coef)
+            : base(modelVectors, weights, rho)
+        {
+            Degree = degree;
+            Gamma = gamma;
+            Coef = coef;
+        }
+
+        /// <summary>
+        /// <para>Returns an indication of similarity between vector <c>v1</c> and <c>v2</c>.</para>
+        /// <para>In this case, we use a polynomial dot product.</para>
+        /// </summary>
+        protected override double KernelFunc(FeatureVector v1, FeatureVector v2)
+        {
+            double result = 0;
+            foreach (int f_i in v2.FeatureUnionWith(v2))
+                result += v1.AllFeatures[f_i] * v2.AllFeatures[f_i];
+            return Math.Pow((Gamma * result) + Coef, Degree);
+        }
+    }
+
+    public class LibSVMClassifier_RBF : SVMClassifier
+    {
+        private readonly double Gamma;
+
+        public LibSVMClassifier_RBF(List<FeatureVector> modelVectors, double[] weights, double rho, double gamma)
+            : base(modelVectors, weights, rho)
+        {
+            Gamma = gamma;
+        }
+
+        /// <summary>
+        /// <para>Returns an indication of similarity between vector <c>v1</c> and <c>v2</c>.</para>
+        /// <para>In this case, we use a radial basis function.</para>
+        /// </summary>
+        protected override double KernelFunc(FeatureVector v1, FeatureVector v2)
+        {
+            double result = 0;
+            foreach (int f_i in v1.FeatureUnionWith(v2))
+            {
+                double diff = Math.Abs(v1.AllFeatures[f_i] - v2.AllFeatures[f_i]);
+                result += (diff * diff);
+            }
+            // Optimization:
+            // Here, you would usually square root the result to get the euclidean distance, 
+            // but this kernel would ordinarily square the distance anyway.
+            // So, here we have just skipped these steps.
+            return Math.Pow(Math.E, -1 * Gamma * result);
+        }
+    }
+
+    public class LibSVMClassifier_Sigmoid : SVMClassifier
+    {
+        private readonly double Gamma;
+        private readonly double Coef;
+
+        public LibSVMClassifier_Sigmoid(List<FeatureVector> modelVectors, double[] weights, double rho, double gamma, double coef)
+            : base(modelVectors, weights, rho)
+        {
+            Gamma = gamma;
+            Coef = coef;
+        }
+
+        /// <summary>
+        /// <para>Returns an indication of similarity between vector <c>v1</c> and <c>v2</c>.</para>
+        /// <para>In this case, we use a sigmoid function.</para>
+        /// </summary>
+        protected override double KernelFunc(FeatureVector v1, FeatureVector v2)
+        {
+            double result = 0;
+            foreach (int f_i in v2.FeatureUnionWith(v2))
+                result += v1.AllFeatures[f_i] * v2.AllFeatures[f_i];
+            return Math.Tanh((Gamma * result) + Coef);
         }
     }
 }

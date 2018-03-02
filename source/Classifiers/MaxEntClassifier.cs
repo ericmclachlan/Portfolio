@@ -31,7 +31,7 @@ namespace ericmclachlan.Portfolio
             // Nothing special needs to be done.
         }
 
-        protected override double[] Test(FeatureVector vector)
+        protected override int Test(FeatureVector vector, out double[] details)
         {
             double[] distribution = new double[NoOfClasses];
 
@@ -49,27 +49,26 @@ namespace ericmclachlan.Portfolio
                 distribution[c_i] = Math.Pow(Math.E, prob);
             }
             StatisticsHelper.Normalize(distribution);
-            return distribution;
+
+            details = distribution;
+            return StatisticsHelper.ArgMax(details);
         }
 
 
         // Static Methods
 
-        public static MaxEntClassifier LoadModel(string model_file, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId)
+        public static MaxEntClassifier LoadModel(string model_file, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)
         {
             string text = File.ReadAllText(model_file);
             List<double> lambda_c;
             List<FeatureVector> vectors;
-            LoadModel(text, out classToClassId, out featureToFeatureId, out lambda_c, out vectors);
+            LoadModel(text, classToClassId, featureToFeatureId, out lambda_c, out vectors);
 
             return new MaxEntClassifier(vectors, classToClassId.Count, lambda_c.ToArray());
         }
 
-        protected static void LoadModel(string text, out ValueIdMapper<string> classToClassId, out ValueIdMapper<string> featureToFeatureId, out List<double> lambda_c, out List<FeatureVector> vectors)
+        protected static void LoadModel(string text, TextIdMapper classToClassId, TextIdMapper featureToFeatureId, out List<double> lambda_c, out List<FeatureVector> vectors)
         {
-            classToClassId = new ValueIdMapper<string>();
-            featureToFeatureId = new ValueIdMapper<string>();
-
             var probability_c_uf = new Dictionary<int, Dictionary<int, double>>();
             lambda_c = new List<double>();
             int classId = -1;

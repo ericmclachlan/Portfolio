@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ericmclachlan.Portfolio
+﻿namespace ericmclachlan.Portfolio
 {
     /// <summary>
     /// <para>This command will train a TBL classifier.</para>
@@ -29,22 +27,15 @@ namespace ericmclachlan.Portfolio
         
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 1;
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: train_data, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
             int gold_i = 0;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
 
-            int[][] headers;
-            var trainingVectors = FeatureVector.LoadFromSVMLight(train_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            var goldClasses = headers[gold_i];
-
-            // Create a TBL classifier:
-            var classifier = new TBLClassifier(trainingVectors, classToClassId.Count, min_gain, gold_i);
-
-            // Save the TBL classifier model to the model_file:
-            classifier.SaveModel(model_file, classToClassId, featureToFeatureId);
+            Program.TrainModel(vectorFile, model_file, featureDelimiter: ' ', isSortRequiredForFeatures: false
+                , classifierFactory: (vectors, classToClassId, featureToFeatureId) =>
+                {
+                    return new TBLClassifier(vectors, classToClassId.Count, min_gain, gold_i);
+                }
+                );
         }
     }
 }

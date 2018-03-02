@@ -17,7 +17,7 @@ namespace ericmclachlan.Portfolio
         #region Parameters
 
         [CommandParameter(Index = 0, Description = "Vector file in text format.")]
-        public string test_data { get; set; }
+        public string vector_file { get; set; }
 
         [CommandParameter(Index = 1, Description = "This file contains one number per line, which is the length of a sentence.")]
         /// <summary>This file contains one number per line, which is the length of a sentence.</summary>
@@ -48,8 +48,8 @@ namespace ericmclachlan.Portfolio
 
         #endregion
 
-        private ValueIdMapper<string> classToClassId;
-        private ValueIdMapper<string> featureToFeatureId;
+        private TextIdMapper classToClassId;
+        private TextIdMapper featureToFeatureId;
         private MaxEntPOSClassifier classifier;
 
 
@@ -57,42 +57,33 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 2;
             int instanceName_i = 0;
             int gold_i = 1;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
+            featureToFeatureId = new TextIdMapper();
+            classToClassId = new TextIdMapper();
+            var instanceNameToId = new TextIdMapper();
+            TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { instanceNameToId, classToClassId };
+
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 2, featureDelimiter: ':', isSortRequired: false);
+            classToClassId = headerToHeaderIds[gold_i];
 
             // Read the boundaries:
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
 
             // Read the classifier model:
-            classifier = MaxEntPOSClassifier.LoadModel(File.ReadAllText(model_file), out classToClassId, out featureToFeatureId);
-            int trainingFeatureCount = featureToFeatureId.Count;
+            classifier = MaxEntPOSClassifier.LoadModel(model_file, classToClassId, featureToFeatureId);
 
             // Read the vectors:
-            int[][] headers;
-            var testVectors = FeatureVector.LoadFromSVMLight(test_data, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Continuous, featureDelimiter: ':', isSortRequiredForFeatures: false);
-            int[] instanceNameIds = headers[instanceName_i];
-            int[] goldClasses = headers[gold_i];
+            var testVectors = vectorFile.LoadFromSVMLight(featureToFeatureId, headerToHeaderIds, FeatureType.Continuous);
 
-            // TODO: Neaten this up a little.
-            string[] instanceNames = new string[instanceNameIds.Length];
-            for (int i = 0; i < instanceNameIds.Length; i++)
-            {
-                int instanceNameId = instanceNameIds[i];
-                instanceNames[i] = headerToHeaderIds[instanceName_i][i];
-            }
+            // Get the output ready for display.
+            int[] goldClassIds = vectorFile.Headers[gold_i];
+            int[] instanceNameIds = vectorFile.Headers[instanceName_i];
+            string[] instanceNames = instanceNameToId.GetValues(instanceNameIds);
 
             // Generate sys_output:
             ConfusionMatrix confusionMatrix;
             File.WriteAllText(sys_output, GenerateSysOutput(instanceNames, testVectors, sentenceLengths, out confusionMatrix, gold_i));
-
-            // Generate acc:
-            Console.WriteLine($"class_num={classToClassId.Count} feat_num={trainingFeatureCount}");
-            Console.WriteLine();
-            Console.WriteLine();
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "Test");
         }
 
 

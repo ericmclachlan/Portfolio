@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ericmclachlan.Portfolio
 {
@@ -15,7 +16,7 @@ namespace ericmclachlan.Portfolio
 
         private Dictionary<T, int> _lookup = new Dictionary<T, int>();
         private int _maxId = 0;
-        private List<T> _words = new List<T>();
+        private List<T> _values = new List<T>();
 
         // Public Members
 
@@ -30,7 +31,7 @@ namespace ericmclachlan.Portfolio
                 {
                     id = _maxId++;
                     _lookup[value] = id;
-                    _words.Add(value);
+                    _values.Add(value);
                 }
                 // Return the unique internal idenfifier that represents the specified value.
                 return id;
@@ -40,10 +41,25 @@ namespace ericmclachlan.Portfolio
         /// <summary>Returns the value represented by this internal identifier.</summary>
         public T this[int id]
         {
-            get { return _words[id]; }
+            get { return _values[id]; }
+        }
+
+        public T[] GetValues(int[] ids)
+        {
+            T[] values = new T[ids.Length];
+            for (int i = 0; i < ids.Length; i++)
+            {
+                values[i] = _values[ids[i]];
+            }
+            return values;
         }
 
         /// <summary>Returns the number of items in the collection.</summary>
         public int Count { get { return _maxId; } }
+    }
+
+    public class TextIdMapper : ValueIdMapper<string>
+    {
+        // Nothing else needs to be done.
     }
 }

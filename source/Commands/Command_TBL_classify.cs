@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
     /// <summary>
     /// <para>
-    /// This command will invoke Transition Based Learning *TBL( classification.
+    /// This command will classify the specified <c>vector_file</c> using Transition Based Learning (TBL).
     /// </para>
     /// <para>
-    /// This command will be called like this: TBL_classify.sh test_data model_file sys_output N
+    /// This command will be called like this: TBL_classify.sh <c>vector_file</c> <c>model_file</c> <c>sys_output</c> <c>N</c>
     /// </para>
     /// </summary>
     public class Command_TBL_classify : ICommand
@@ -20,7 +19,7 @@ namespace ericmclachlan.Portfolio
 
         /// <summary>Vector file in text format. (You could run the classifier against either a test or training file.)</summary>
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Vector file in text format. (You could run the classifier against either a test or training file.)")]
-        public string test_file { get; set; }
+        public string vector_file { get; set; }
 
         /// <summary>This input file contains a serialization of the TBL model.</summary>
         [CommandParameter(Index = 1, Type = CommandParameterType.InputFile, Description = "This input file contains a serialization of the TBL model.")]
@@ -41,37 +40,29 @@ namespace ericmclachlan.Portfolio
         {
             int gold_i = 0;
 
-            int noOfHeadersColumns = 1;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
-
-            // Load the TBL classifier:
-            var classifier = TBLClassifier.LoadModel(model_file, classToClassId, featureToFeatureId, N, gold_i);
-
-            int[][] headers;
-            var vectors = FeatureVector.LoadFromSVMLight(test_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            var goldClasses = headers[gold_i];
-
-            // Output the result of the classification:
-            int[] systemClasses;
-            string[] details;
-            GetSystemClassesAndTransitionDetails(vectors, classifier, classToClassId, featureToFeatureId, out systemClasses, out details);
-            ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.CreateNew, vectors, classToClassId, systemClasses, details, Path.GetFileName(test_file));
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            
+            Program.ReportOnModel(vectorFile, sys_output
+                , classifierFactory: (classToClassId, featureToFeatureId) =>
+                {
+                    return TBLClassifier.LoadModel(model_file, classToClassId, featureToFeatureId, N, gold_i);
+                }
+                , getDetailsFunc: GetDetails
+            );
         }
 
-        private static void GetSystemClassesAndTransitionDetails(List<FeatureVector> vectors, TBLClassifier classifier, ValueIdMapper<string> classToClassId, ValueIdMapper<string> featureToFeatureId, out int[] systemClasses, out string[] details)
+        private static string[] GetDetails(Classifier classifier, List<FeatureVector> vectors, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)
         {
-            systemClasses = new int[vectors.Count];
-            details = new string[vectors.Count];
+            TBLClassifier tblClassifier = (TBLClassifier)classifier;
+            var systemClasses = new int[vectors.Count];
+            var details = new string[vectors.Count];
             for (int v_i = 0; v_i < vectors.Count; v_i++)
             {
                 StringBuilder sb = new StringBuilder();
-                int currentClass = classifier.DefaultClass;
-                foreach (TBLClassifier.Transformation t in classifier.Transformations)
+                int currentClass = tblClassifier.DefaultClass;
+                foreach (TBLClassifier.Transformation t in tblClassifier.Transformations)
                 {
-                    int newClass = classifier.Transform(currentClass, t, vectors[v_i]);
+                    int newClass = tblClassifier.Transform(currentClass, t, vectors[v_i]);
                     if (newClass == currentClass)
                         continue;
 
@@ -84,6 +75,7 @@ namespace ericmclachlan.Portfolio
                 systemClasses[v_i] = currentClass;
                 details[v_i] = sb.ToString();
             }
+            return details;
         }
     }
 }

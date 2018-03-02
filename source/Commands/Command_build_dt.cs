@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-
-namespace ericmclachlan.Portfolio
+﻿namespace ericmclachlan.Portfolio
 {
     public class Command_build_dt : ICommand
     {
@@ -35,33 +32,18 @@ namespace ericmclachlan.Portfolio
 
         public void ExecuteCommand()
         {
-            int noOfHeadersColumns = 1;
-            int gold_i = 0;
-            ValueIdMapper<string> featureToFeatureId;
-            ValueIdMapper<string>[] headerToHeaderIds;
-            ValueIdMapper<string> classToClassId;
-            Program.CreateValueIdMappers(noOfHeadersColumns, gold_i, out featureToFeatureId, out headerToHeaderIds, out classToClassId);
-
-            // Load the training data:
-            int[][] headers;
-            List<FeatureVector> trainingVectors = FeatureVector.LoadFromSVMLight(training_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            int[] goldClasses_train = headers[gold_i];
-
-            // Create the Decision Tree
-            DecisionTreeClassifier classifier = new DecisionTreeClassifier(trainingVectors, gold_i, classToClassId.Count, max_depth, min_gain);
-            string text = classifier.Root.GetModelAsText(classToClassId, featureToFeatureId);
-            File.WriteAllText(model_file, text);
-
-            // Report accuracy on training data.
-            ConfusionMatrix confusionMatrix = classifier.GetConfusionMatrix(trainingVectors, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "training");
-
-            // Load the test data:
-            List<FeatureVector> testVectors = FeatureVector.LoadFromSVMLight(test_data_file, featureToFeatureId, headerToHeaderIds, noOfHeadersColumns, out headers, FeatureType.Binary, featureDelimiter: ' ', isSortRequiredForFeatures: false);
-            int[] goldClasses_test = headers[gold_i];
-
-            ProgramOutput.GenerateSysOutputForVectors(sys_output, FileCreationMode.CreateNew, "test", classifier, trainingVectors, classToClassId, out confusionMatrix, gold_i);
-            ProgramOutput.ReportAccuracy(confusionMatrix, classToClassId, "test");
+            FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            FeatureVectorFile vectorFile_test = new FeatureVectorFile(path: test_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            Program.ReportOnTrainingAndTesting(vectorFile_train, vectorFile_test, sys_output
+                    , classifierFactory: (trainingVectors, gold_i, noOfClasses) =>
+                    {
+                        return new DecisionTreeClassifier(trainingVectors, gold_i, noOfClasses, max_depth, min_gain);
+                    }
+                    , getDetailsFunc: (classifier, vectors, classToClassId) =>
+                    {
+                        return ProgramOutput.GetDistributionDetails(classifier, vectors, classToClassId);
+                    }
+                );
         }
     }
 }
