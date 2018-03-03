@@ -72,7 +72,7 @@ namespace ericmclachlan.Portfolio
         /// <param name="model_file">A file containing a serialization of the classifier model.</param>
         /// <param name="sys_output">A report on the classification details.</param>
         /// <param name="classifierFactory">Provides the necessary classifier.</param>
-        internal static void ReportOnModel(
+        internal static double ReportOnModel(
             FeatureVectorFile vectorFile
             , string sys_output
             , Func<TextIdMapper, TextIdMapper, Classifier> classifierFactory
@@ -93,7 +93,8 @@ namespace ericmclachlan.Portfolio
 
             string[] details = getDetailsFunc(classifier, vectors, classToClassId, featureToFeatureId);
 
-            ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.CreateNew, vectors, classToClassId, goldClasses, systemClasses, details, heading: Path.GetFileName(vectorFile.Path));
+            var accuracy = ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.CreateNew, vectors, classToClassId, goldClasses, systemClasses, details, heading: Path.GetFileName(vectorFile.Path));
+            return accuracy;
         }
 
 

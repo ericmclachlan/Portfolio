@@ -11,9 +11,9 @@ namespace ericmclachlan.Portfolio
     /// This command will be called as follows: svm_classify test_data model_file sys_output
     /// </para>
     /// </summary>
-    public class Command_svm_classify : ICommand
+    internal class Command_svm_classify : Command<double>
     {
-        public string CommandName { get { return "svm_classify"; } }
+        public override string CommandName { get { return "svm_classify"; } }
 
         #region Parameters
 
@@ -32,7 +32,7 @@ namespace ericmclachlan.Portfolio
         #endregion
 
 
-        public void ExecuteCommand()
+        public override double ExecuteCommand()
         {
             FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ':', isSortRequired: true);
             FeatureVectorFile modelFile = new FeatureVectorFile(path: model_file, noOfHeaderColumns: 1, featureDelimiter: ':', isSortRequired: true);
@@ -41,13 +41,14 @@ namespace ericmclachlan.Portfolio
             TextIdMapper[] headerToHeaderIds_model = new TextIdMapper[modelFile.NoOfHeaderColumns];
             headerToHeaderIds_model[alphaColumn_i] = new TextIdMapper();
 
-            Program.ReportOnModel(vectorFile, sys_output
+            var accuracy = Program.ReportOnModel(vectorFile, sys_output
                 , classifierFactory: (classToClassId, featureToFeatureId) =>
                 {
                     return SVMClassifier.LoadModel(modelFile, classToClassId, featureToFeatureId, alphaColumn_i, headerToHeaderIds_model);
                 }
                 , getDetailsFunc: GetDetails
             );
+            return accuracy;
         }
 
         private static string[] GetDetails(Classifier classifier, List<FeatureVector> vectors, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)

@@ -4,11 +4,11 @@
     /// <para>This command will train a TBL classifier.</para>
     /// <para>The command line is: TBL_train.sh train_data model_file min_gain.</para>
     /// </summary>
-    public class Command_TBL_train : ICommand
+    internal class Command_TBL_train : Command<bool>
     {
         // Properties
 
-        public string CommandName { get { return "TBL_train"; } }
+        public override string CommandName { get { return "TBL_train"; } }
 
         /// <summary>Training vector file in text format.</summary>
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Training vector file in text format.")]
@@ -25,7 +25,7 @@
 
         // Methods
         
-        public void ExecuteCommand()
+        public override bool ExecuteCommand()
         {
             FeatureVectorFile vectorFile = new FeatureVectorFile(path: train_data, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
             int gold_i = 0;
@@ -36,6 +36,8 @@
                     return new TBLClassifier(vectors, classToClassId.Count, min_gain, gold_i);
                 }
                 );
+
+            return true;
         }
     }
 }

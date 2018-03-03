@@ -1,10 +1,10 @@
 ﻿namespace ericmclachlan.Portfolio
 {
-    internal class Command_maxent_classify : ICommand
+    internal class Command_maxent_classify : Command<bool>
     {
         // Members
 
-        public string CommandName { get { return "maxent_classify"; } }
+        public override string CommandName { get { return "maxent_classify"; } }
 
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile)]
         public string vector_file { get; set; }
@@ -18,7 +18,7 @@
 
         // Methods
 
-        public void ExecuteCommand()
+        public override bool ExecuteCommand()
         {
             FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
             Program.ReportOnModel(vectorFile_train, sys_output, classifierFactory: (classToClassId, featureToFeatureId) =>
@@ -30,6 +30,7 @@
                     return ProgramOutput.GetDistributionDetails(classifier, vectors, classToClassId);
                 }
             );
+            return true;
         }
     }
 }

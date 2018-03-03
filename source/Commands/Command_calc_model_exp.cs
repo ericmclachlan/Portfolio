@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace ericmclachlan.Portfolio
 {
-    internal class Command_calc_model_exp : ICommand
+    internal class Command_calc_model_exp : Command<bool>
     {
         // Members
 
-        public string CommandName { get { return "calc_model_exp"; } }
+        public override string CommandName { get { return "calc_model_exp"; } }
 
         private TextIdMapper classToClassId = new TextIdMapper();
         private TextIdMapper featureToFeatureId = new TextIdMapper();
@@ -26,7 +26,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public void ExecuteCommand()
+        public override bool ExecuteCommand()
         {
             FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
             
@@ -62,6 +62,7 @@ namespace ericmclachlan.Portfolio
             double[,] expectation = CalculateModelExpectation(trainingVectors, calculate_Prob_c_v);
 
             OutputEmpiricalCount(expectation, trainingVectors.Count, requiresSort:true);
+            return true;
         }
 
         private double[,] CalculateModelExpectation(List<FeatureVector> trainingVectors, Func<int, FeatureVector,  double> calculate_Prob_c_v)

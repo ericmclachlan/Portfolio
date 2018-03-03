@@ -1,9 +1,0 @@
-Confusion matrix for 'libSVM_train':
-row is the truth, column is the system output
-
-             0 1
-0	542	358
-1	476	424
-
-  libSVM_train accuracy=0.53667
-

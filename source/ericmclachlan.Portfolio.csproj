@@ -101,7 +101,7 @@
     <Compile Include="Helpers\PermutationHelper.cs" />
     <Compile Include="Classifiers\SVMClassifier.cs" />
     <Compile Include="DataStructures\ValueCollection.cs" />
-    <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Commands\Command.cs" />
     <Compile Include="DataStructures\IdValuePair.cs" />
     <Compile Include="Classifiers\kNNClassifier.cs" />
     <Compile Include="Classifiers\MaxEntPOSClassifier.cs" />

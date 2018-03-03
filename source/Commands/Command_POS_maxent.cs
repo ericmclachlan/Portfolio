@@ -6,11 +6,11 @@ using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
-    internal class Command_POS_maxent : ICommand
+    internal class Command_POS_maxent : Command<double>
     {
         // Members
 
-        public string CommandName { get { return "beamsearch_pos_maxent"; } }
+        public override string CommandName { get { return "beamsearch_pos_maxent"; } }
         
         #region Parameters
 
@@ -53,7 +53,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public void ExecuteCommand()
+        public override double ExecuteCommand()
         {
             FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ':', isSortRequired: false);
 
@@ -90,6 +90,7 @@ namespace ericmclachlan.Portfolio
 
             // Generate sys_output:
             var confusionMatrix = GenerateSysOutput(sys_output, instanceNames, testVectors, sentenceLengths, gold_i);
+            return confusionMatrix.CalculateAccuracy();
         }
 
 

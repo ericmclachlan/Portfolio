@@ -63,7 +63,7 @@ namespace ericmclachlan.Portfolio
         /// <param name="vectors">A collection of vectors to classify.</param>
         /// <param name="classToclassId">A class for providing human-readable class labels.</param>
         /// <param name="heading">Usually, "Training" or "Test".</param>
-        internal static void GenerateSysOutput(
+        internal static double GenerateSysOutput(
             string output_file
             , FileCreationMode fileCreationMode
             , List<FeatureVector> vectors
@@ -101,7 +101,8 @@ namespace ericmclachlan.Portfolio
                     confusionMatrix[goldClasses[v_i], systemClasses[v_i]]++;
                 }
                 writer.WriteLine();
-                ReportAccuracy(confusionMatrix, classToclassId, heading);
+                double accuracy = ReportAccuracy(confusionMatrix, classToclassId, heading);
+                return accuracy;
             }
             finally
             {

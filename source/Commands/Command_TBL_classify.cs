@@ -11,11 +11,11 @@ namespace ericmclachlan.Portfolio
     /// This command will be called like this: TBL_classify.sh <c>vector_file</c> <c>model_file</c> <c>sys_output</c> <c>N</c>
     /// </para>
     /// </summary>
-    public class Command_TBL_classify : ICommand
+    internal class Command_TBL_classify : Command<bool>
     {
         // Properties
 
-        public string CommandName { get { return "TBL_classify"; } }
+        public override string CommandName { get { return "TBL_classify"; } }
 
         /// <summary>Vector file in text format. (You could run the classifier against either a test or training file.)</summary>
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Vector file in text format. (You could run the classifier against either a test or training file.)")]
@@ -36,7 +36,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public void ExecuteCommand()
+        public override bool ExecuteCommand()
         {
             int gold_i = 0;
 
@@ -49,6 +49,7 @@ namespace ericmclachlan.Portfolio
                 }
                 , getDetailsFunc: GetDetails
             );
+            return true;
         }
 
         private static string[] GetDetails(Classifier classifier, List<FeatureVector> vectors, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)

@@ -6,11 +6,11 @@ using System.Text;
 
 namespace ericmclachlan.Portfolio
 {
-    internal class Command_beamsearch_maxent : ICommand
+    internal class Command_beamsearch_maxent : Command<double>
     {
         // Members
 
-        public string CommandName { get { return "beamsearch_maxent"; } }
+        public override string CommandName { get { return "beamsearch_maxent"; } }
 
         public CommandParameterType[] CommandParamaters { get { return new CommandParameterType[] { }; } }
 
@@ -55,7 +55,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public void ExecuteCommand()
+        public override double ExecuteCommand()
         {
             int instanceName_i = 0;
             int gold_i = 1;
@@ -65,7 +65,6 @@ namespace ericmclachlan.Portfolio
             TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { instanceNameToId, classToClassId };
 
             FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 2, featureDelimiter: ':', isSortRequired: false);
-            classToClassId = headerToHeaderIds[gold_i];
 
             // Read the boundaries:
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
@@ -84,6 +83,7 @@ namespace ericmclachlan.Portfolio
             // Generate sys_output:
             ConfusionMatrix confusionMatrix;
             File.WriteAllText(sys_output, GenerateSysOutput(instanceNames, testVectors, sentenceLengths, out confusionMatrix, gold_i));
+            return confusionMatrix.CalculateAccuracy();
         }
 
 

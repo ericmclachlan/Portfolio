@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace ericmclachlan.Portfolio
 {
-    internal class Command_rank_feat_by_chi_square : ICommand
+    internal class Command_rank_feat_by_chi_square : Command<bool>
     {
         // Public Members
 
-        public string CommandName { get { return "rank_feat_by_chi_square"; } }
+        public override string CommandName { get { return "rank_feat_by_chi_square"; } }
 
 
         // Private Members
@@ -21,7 +21,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public void ExecuteCommand()
+        public override bool ExecuteCommand()
         {
             // Initialize the text-to-Id mappers:
             int gold_i = 0;
@@ -64,6 +64,7 @@ namespace ericmclachlan.Portfolio
                 chiSquare[f_i] = new IdValuePair<double>(f_i, StatisticsHelper.CalculateChiSquare(contingencyTable_f[f_i]));
             }
             ReportChiSquareResults(contingencyTable_f, chiSquare);
+            return true;
         }
 
 

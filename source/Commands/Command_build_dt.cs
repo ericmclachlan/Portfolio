@@ -1,10 +1,10 @@
 ﻿namespace ericmclachlan.Portfolio
 {
-    public class Command_build_dt : ICommand
+    internal class Command_build_dt : Command<bool>
     {
         // Properties
 
-        public string CommandName { get { return "build_dt"; } }
+        public override string CommandName { get { return "build_dt"; } }
 
 
         // Members
@@ -30,7 +30,7 @@
 
         // Methods
 
-        public void ExecuteCommand()
+        public override bool ExecuteCommand()
         {
             FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
             FeatureVectorFile vectorFile_test = new FeatureVectorFile(path: test_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
@@ -44,6 +44,7 @@
                         return ProgramOutput.GetDistributionDetails(classifier, vectors, classToClassId);
                     }
                 );
+            return true;
         }
     }
 }

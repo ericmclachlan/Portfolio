@@ -1,11 +1,11 @@
 ﻿namespace ericmclachlan.Portfolio
 {
     /// <summary>Provides a commandline interface to the kNN Classifier.</summary>
-    internal class Command_build_kNN : ICommand
+    internal class Command_build_kNN : Command<double>
     {
         // Members
 
-        public string CommandName { get { return "build_kNN"; } }
+        public override string CommandName { get { return "build_kNN"; } }
 
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Vector file in text format(cf.train.vectors.txt).")]
         public string training_data_file { get; set; }
@@ -25,7 +25,7 @@
 
         // Public Methods
 
-        public void ExecuteCommand()
+        public override double ExecuteCommand()
         {
             FeatureVectorFile vectorFile_train = new FeatureVectorFile(path: training_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: true);
             FeatureVectorFile vectorFile_test = new FeatureVectorFile(path: test_data_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: true);
@@ -50,7 +50,8 @@
             var details_test = ProgramOutput.GetDistributionDetails(classifier, testVectors, classToClassId);
 
             ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.CreateNew, trainingVectors, classToClassId, goldClasses_train, systemClasses_train, details_train, "training data");
-            ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.Append, testVectors, classToClassId, goldClasses_test, systemClasses_test, details_test, "test data");
+            var testAccuracy = ProgramOutput.GenerateSysOutput(sys_output, FileCreationMode.Append, testVectors, classToClassId, goldClasses_test, systemClasses_test, details_test, "test data");
+            return testAccuracy;
         }
     }
 }

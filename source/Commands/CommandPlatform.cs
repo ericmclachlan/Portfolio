@@ -24,7 +24,7 @@ namespace ericmclachlan.Portfolio
     {   
         // Private Members
 
-        internal static Dictionary<string, ICommand> SupportedCommands = new Dictionary<string, ICommand>();
+        internal static Dictionary<string, Command> SupportedCommands = new Dictionary<string, Command>();
 
 
         // Construction
@@ -34,10 +34,10 @@ namespace ericmclachlan.Portfolio
         {
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
             {
-                if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(ICommand)))
+                if (!type.IsAbstract && typeof(Command).IsAssignableFrom(type))
                 {
                     var instance = Activator.CreateInstance(Assembly.GetExecutingAssembly().FullName, type.FullName);
-                    if (instance.Unwrap() is ICommand command)
+                    if (instance.Unwrap() is Command command)
                     {
                         SupportedCommands[command.CommandName] = command;
                     }
@@ -48,7 +48,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public static void Execute(string[] args)
+        public static object Execute(string[] args)
         {
             // Rare Case: No command is specified.
             if (args.Length == 0)
@@ -60,7 +60,7 @@ namespace ericmclachlan.Portfolio
             }
 
             // General Case: A command is specified:
-            ICommand command;
+            Command command;
             // Rare Case: The command is not supported:
             if (!SupportedCommands.TryGetValue(args[0], out command))
             {
@@ -130,12 +130,12 @@ namespace ericmclachlan.Portfolio
                     throw new Exception($"No value has been specified for required parameter '{properties[i].Name}'.");
                 }
             }
-            command.ExecuteCommand();
+            return command.Execute();
         }
 
         /// <summary>Sets <c>property</c> to the value of <c>valueAsText</c>.</summary>
         private static void ValidateAndSetPropertyValue(
-            ICommand command
+            Command command
             , PropertyInfo property
             , CommandParameterType commandParameterType
             , ref string valueAsText)
@@ -196,20 +196,19 @@ namespace ericmclachlan.Portfolio
 
         // Inner Classes
 
-        internal abstract class BuiltInCommand : ICommand
+        internal abstract class BuiltInCommand<T>: Command<T>
         {
-            public abstract string CommandName { get; }
-            public abstract void ExecuteCommand();
+            // Nothing else needs to be done.
         }
 
         /// <summary>This command lists all available commands.</summary>
-        internal class Command_help : BuiltInCommand
+        internal class Command_help : BuiltInCommand<bool>
         {
             // Properties
 
             public override string CommandName { get { return "help"; } }
 
-            public override void ExecuteCommand()
+            public override bool ExecuteCommand()
             {
                 Debug.Assert(SupportedCommands.Count > 0);
 
@@ -218,22 +217,23 @@ namespace ericmclachlan.Portfolio
                 var commandList = from command in SupportedCommands.Values
                                   orderby command.CommandName
                                   select command;
-                foreach (ICommand command in commandList)
+                foreach (Command command in commandList)
                 {
                     Console.Error.WriteLine("\t{0}", command.CommandName);
                 }
+                return true;
             }
         }
 
 
         /// <summary>This command generates bash scrtips for commands that are not derived from BuildInCommand.</summary>
-        internal class Command_generateScripts : BuiltInCommand
+        internal class Command_generateScripts : BuiltInCommand<bool>
         {
             // Properties
 
             public override string CommandName { get { return "generate_scripts"; } }
 
-            public override void ExecuteCommand()
+            public override bool ExecuteCommand()
             {
                 Debug.Assert(SupportedCommands.Count > 0);
 
@@ -241,10 +241,10 @@ namespace ericmclachlan.Portfolio
                 var commandList = from command in SupportedCommands.Values
                                   orderby command.CommandName
                                   select command;
-                foreach (ICommand command in commandList)
+                foreach (Command command in commandList)
                 {
                     // Don't generate scripts for the built-in commands.
-                    if (command is BuiltInCommand)
+                    if (command is BuiltInCommand<bool>)
                         continue;
 
                     StringBuilder script = new StringBuilder();
@@ -289,6 +289,7 @@ namespace ericmclachlan.Portfolio
                     File.WriteAllText(fileName, script.ToString());
                     Console.Error.WriteLine($"\tGenerating '{fileName}'");
                 }
+                return true;
             }
         }
     }
