@@ -44,7 +44,7 @@ namespace ericmclachlan.Portfolio
                 for (int u_i = 0; u_i < vector.UsedFeatures.Length; u_i++)
                 {
                     int f_i = vector.UsedFeatures[u_i];
-                    prob += TrainingVectors[c_i].AllFeatures[f_i];
+                    prob += TrainingVectors[c_i].Features[f_i];
                 }
                 distribution[c_i] = Math.Pow(Math.E, prob);
             }

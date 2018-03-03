@@ -31,9 +31,9 @@ namespace ericmclachlan.Portfolio
 
             for (int v_i = 0; v_i < TrainingVectors.Count; v_i++)
             {
-                for (int f_i = 0; f_i < TrainingVectors[v_i].AllFeatures.Length; f_i++)
+                for (int f_i = 0; f_i < TrainingVectors[v_i].Features.Length; f_i++)
                 {
-                    countW_c[TrainingVectors[v_i].Headers[Gold_i]] += TrainingVectors[v_i].AllFeatures[f_i];
+                    countW_c[TrainingVectors[v_i].Headers[Gold_i]] += TrainingVectors[v_i].Features[f_i];
                     countW += countW_c[TrainingVectors[v_i].Headers[Gold_i]];
                 }
             }
@@ -69,7 +69,7 @@ namespace ericmclachlan.Portfolio
             {
                 int f_i = vector.UsedFeatures[w_i];
                 if (f_i < logProb_f_c.GetLength(0))
-                    logProb += (vector.AllFeatures[f_i] * logProb_f_c[f_i, c_i]);
+                    logProb += (vector.Features[f_i] * logProb_f_c[f_i, c_i]);
                 else
                     logProb += logProbOOV_c[c_i];
             }

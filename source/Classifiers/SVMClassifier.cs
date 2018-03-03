@@ -169,7 +169,7 @@ namespace ericmclachlan.Portfolio
         {
             double result = 0;
             foreach (int f_i in v2.FeatureUnionWith(v2))
-                result += v1.AllFeatures[f_i] * v2.AllFeatures[f_i];
+                result += v1.Features[f_i] * v2.Features[f_i];
             return result;
         }
     }
@@ -196,7 +196,7 @@ namespace ericmclachlan.Portfolio
         {
             double result = 0;
             foreach (int f_i in v2.FeatureUnionWith(v2))
-                result += v1.AllFeatures[f_i] * v2.AllFeatures[f_i];
+                result += v1.Features[f_i] * v2.Features[f_i];
             return Math.Pow((Gamma * result) + Coef, Degree);
         }
     }
@@ -220,7 +220,7 @@ namespace ericmclachlan.Portfolio
             double result = 0;
             foreach (int f_i in v1.FeatureUnionWith(v2))
             {
-                double diff = Math.Abs(v1.AllFeatures[f_i] - v2.AllFeatures[f_i]);
+                double diff = Math.Abs(v1.Features[f_i] - v2.Features[f_i]);
                 result += (diff * diff);
             }
             // Optimization:
@@ -251,7 +251,7 @@ namespace ericmclachlan.Portfolio
         {
             double result = 0;
             foreach (int f_i in v2.FeatureUnionWith(v2))
-                result += v1.AllFeatures[f_i] * v2.AllFeatures[f_i];
+                result += v1.Features[f_i] * v2.Features[f_i];
             return Math.Tanh((Gamma * result) + Coef);
         }
     }

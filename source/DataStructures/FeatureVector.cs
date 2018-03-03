@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace ericmclachlan.Portfolio
@@ -21,7 +20,7 @@ namespace ericmclachlan.Portfolio
 
         /// <summary>Each value in this array stores the value of a feature, where the array's index==featureID.</summary>
         // TODO: Rename to Values. Possibly deprecate and modify UsedFeatures to provide direct access.
-        public readonly ValueCollection AllFeatures;
+        public readonly ValueCollection Features;
 
         /// <summary>Each value in this array stores the index(==identifier) of a feature used in this document.</summary>
         public readonly int[] UsedFeatures;
@@ -41,7 +40,7 @@ namespace ericmclachlan.Portfolio
         public FeatureVector(int[] headers, ValueCollection features, int[] usedFeatures, bool sortUsedFeatures)
         {
             Headers = headers;
-            AllFeatures = features;
+            Features = features;
             UsedFeatures = usedFeatures;
 
             // Sometimes, it is preferable to have the features sorted. In these cases, sort the features.
@@ -62,7 +61,7 @@ namespace ericmclachlan.Portfolio
                 else
                     sb.Append(", ");
                 int f_i = UsedFeatures[w_i];
-                sb.AppendFormat("{0}:{1}", f_i, AllFeatures[f_i]);
+                sb.AppendFormat("{0}:{1}", f_i, Features[f_i]);
             }
             sb.AppendLine("}");
             _text = sb.ToString();
@@ -105,7 +104,7 @@ namespace ericmclachlan.Portfolio
                     isFirst = false;
                 else
                     sb.AppendFormat(" ");
-                sb.AppendFormat("{0}:{1:0.#####}", featureToFeatureId[u_i], AllFeatures[u_i]);
+                sb.AppendFormat("{0}:{1:0.#####}", featureToFeatureId[u_i], Features[u_i]);
             }
             return sb.ToString();
         }

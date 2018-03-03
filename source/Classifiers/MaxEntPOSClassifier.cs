@@ -51,8 +51,8 @@ namespace ericmclachlan.Portfolio
         public double CalculateLogProb_c_f(int c_i, int f_i)
         {
             // Handle words in our vocabulary:
-            if (f_i < TrainingVectors[c_i].AllFeatures.Length)
-                return TrainingVectors[c_i].AllFeatures[f_i];
+            if (f_i < TrainingVectors[c_i].Features.Length)
+                return TrainingVectors[c_i].Features[f_i];
             // Handle words Out of Our Vocabulary (OOV):
             else
                 return 0;   // TODO: Use smoothing to handle OOVs.

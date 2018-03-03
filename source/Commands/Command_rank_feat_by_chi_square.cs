@@ -59,7 +59,7 @@ namespace ericmclachlan.Portfolio
                 for (int v_i = 0; v_i < vectors.Count; v_i++)
                 {
                     FeatureVector v = vectors[v_i];
-                    contingencyTable_f[f_i][v.Headers[gold_i], (int)v.AllFeatures[f_i]]++;
+                    contingencyTable_f[f_i][v.Headers[gold_i], (int)v.Features[f_i]]++;
                 }
                 chiSquare[f_i] = new IdValuePair<double>(f_i, StatisticsHelper.CalculateChiSquare(contingencyTable_f[f_i]));
             }

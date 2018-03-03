@@ -82,7 +82,7 @@ namespace ericmclachlan.Portfolio
                 throw new ArgumentOutOfRangeException("vector", "Parameter is expected to have at least one training vector.");
             }
 
-            int noOfFeatures = vectors[0].AllFeatures.Length;
+            int noOfFeatures = vectors[0].Features.Length;
             //Debug.Assert(noOfFeatures >= 0);
 
             // Initialize Output:
@@ -97,7 +97,7 @@ namespace ericmclachlan.Portfolio
                 int count_f = 0;
                 foreach (FeatureVector vector in vectors)
                 {
-                    if (vector.AllFeatures[featureIndex] > 0)
+                    if (vector.Features[featureIndex] > 0)
                         count_t++;
                     else
                         count_f++;
@@ -121,7 +121,7 @@ namespace ericmclachlan.Portfolio
                 {
                     vectors_byClass[vector.Headers[gold_i]].Add(vector);
                     //TODO: It would be nice to make this less binary-feature dependent.
-                    if (vector.AllFeatures[featureIndex] > 0)
+                    if (vector.Features[featureIndex] > 0)
                     {
                         split[1].Add(vector);
                         distribution_byClass[vector.Headers[gold_i]][1]++;
@@ -251,7 +251,7 @@ namespace ericmclachlan.Portfolio
             internal DecisionTreeNode FindLeaf(FeatureVector vector)
             {
                 // TODO: Make this less binary dependent.
-                if (vector.AllFeatures[f_i] > 0 && TrueBranch != null)
+                if (vector.Features[f_i] > 0 && TrueBranch != null)
                     return TrueBranch.FindLeaf(vector);
                 else if (FalseBranch != null)
                     return FalseBranch.FindLeaf(vector);

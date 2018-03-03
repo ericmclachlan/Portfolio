@@ -112,7 +112,7 @@ namespace ericmclachlan.Portfolio
             for (int w_i = 0; w_i < v.UsedFeatures.Length; w_i++)
             {
                 int f_i = v.UsedFeatures[w_i];
-                valuesSquared += v.AllFeatures[f_i] * v.AllFeatures[f_i];
+                valuesSquared += v.Features[f_i] * v.Features[f_i];
             }
             return valuesSquared;
         }
@@ -125,7 +125,7 @@ namespace ericmclachlan.Portfolio
                 // Ignore OOV.
                 if (f_i >= NoOfFeatures)
                     continue;
-                sumOfTheProducts += (v1.AllFeatures[f_i] * v2.AllFeatures[f_i]);
+                sumOfTheProducts += (v1.Features[f_i] * v2.Features[f_i]);
             }
 
             // Get the sum of each vector's values, squared.
@@ -155,7 +155,7 @@ namespace ericmclachlan.Portfolio
                 // Ignore OOV.
                 if (f_i >= NoOfFeatures)
                     continue;
-                double diff = (v2.AllFeatures[f_i] - v1.AllFeatures[f_i]);
+                double diff = (v2.Features[f_i] - v1.Features[f_i]);
                 distance += (diff * diff);
             }
             return distance;

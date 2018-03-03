@@ -76,8 +76,8 @@ namespace ericmclachlan.Portfolio
                 {
                     int c_i = trainingVectors[v_i].Headers[gold_i];
                     int f_i = trainingVectors[v_i].UsedFeatures[u_i];
-                    Debug.Assert(trainingVectors[v_i].AllFeatures[f_i] == 1);
-                    double featureValue = trainingVectors[v_i].AllFeatures[f_i];
+                    Debug.Assert(trainingVectors[v_i].Features[f_i] == 1);
+                    double featureValue = trainingVectors[v_i].Features[f_i];
                     observation[f_i, c_i] += featureValue;
                     sum_byClass[c_i] += featureValue;
                     sum_byFeature[f_i] += featureValue;

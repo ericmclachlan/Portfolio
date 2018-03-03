@@ -65,7 +65,7 @@ namespace ericmclachlan.Portfolio
                 {
                     int f_i = v.UsedFeatures[w_i];
                     //Debug.Assert(v.AllFeatures[f_i] != 0);
-                    count_f_c[f_i, v.Headers[Gold_i]] += v.AllFeatures[f_i];
+                    count_f_c[f_i, v.Headers[Gold_i]] += v.Features[f_i];
                 }
                 count_c[v.Headers[Gold_i]]++;
             }

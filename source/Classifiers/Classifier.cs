@@ -30,7 +30,7 @@ namespace ericmclachlan.Portfolio
             if (trainingVectors == null)
                 NoOfFeatures = 0;
             else
-                NoOfFeatures = trainingVectors[0].AllFeatures.Length;
+                NoOfFeatures = trainingVectors[0].Features.Length;
         }
 
         // Properties

@@ -76,7 +76,7 @@ namespace ericmclachlan.Portfolio
                     for (int c_i = 0; c_i < classToClassId.Count; c_i++)
                     {
                         int f_i = trainingVectors[v_i].UsedFeatures[u_i];
-                        Debug.Assert(trainingVectors[v_i].AllFeatures[f_i] == 1);
+                        Debug.Assert(trainingVectors[v_i].Features[f_i] == 1);
                         // Update the expectation:
                         expectation[f_i, c_i] += fraction * calculate_Prob_c_v(c_i, trainingVectors[v_i]);
                     }
