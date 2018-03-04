@@ -43,7 +43,7 @@ namespace ericmclachlan.Portfolio
                 }
                 distribution[c_i] = logProb;
             }
-            StatisticsHelper.NormalizeLogs(distribution, Math.E);
+            NormalizationHelper.NormalizeLogs(distribution, Math.E);
             details = distribution;
             return StatisticsHelper.ArgMax(details);
         }

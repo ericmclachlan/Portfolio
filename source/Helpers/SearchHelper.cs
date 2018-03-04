@@ -17,24 +17,17 @@ namespace ericmclachlan.Portfolio
         /// </para>
         /// </returns>
         public static int BinarySearch<T>(this IList<T> collection, T input)
-            where T : IComparable<T>
+            where T : IComparable
         {
             // Delegate the work to the private method.
             return BinarySearch_Recurse(collection, input, 0, collection.Count - 1);
         }
 
         private static int BinarySearch_Recurse<T>(IList<T> collection, T input, int startIndex, int endIndex)
-            where T : IComparable<T>
+            where T : IComparable
         {
-            // TODO: I think there's a bug with this implementation:
-
             if (startIndex > endIndex)
                 return startIndex;
-
-            // Assert that the input is sorted.
-            var isSorted = collection[startIndex].CompareTo(collection[endIndex]) >= 0;
-            if (!isSorted)
-                Debug.Assert(false);
 
             int midpoint = startIndex + ((endIndex - startIndex) / 2);
             if (input.CompareTo(collection[midpoint]) > 0)

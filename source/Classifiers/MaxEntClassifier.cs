@@ -48,7 +48,7 @@ namespace ericmclachlan.Portfolio
                 }
                 distribution[c_i] = Math.Pow(Math.E, prob);
             }
-            StatisticsHelper.Normalize(distribution);
+            NormalizationHelper.Normalize(distribution);
 
             details = distribution;
             return StatisticsHelper.ArgMax(details);

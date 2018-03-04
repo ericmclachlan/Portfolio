@@ -1,13 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace ericmclachlan.Portfolio.Tests
 {
     [TestClass()]
-    public class SearchHelperTests
+    public class SortHelper_Tests
     {
         [TestMethod()]
-        public void BinarySearchTest_QuickSortIntegers()
+        public void QuickSort_Integers_Test()
         {
             var permutations = PermutationHelper.GeneratePermutation(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, 5);
             foreach (var permutation in permutations)
@@ -21,7 +20,7 @@ namespace ericmclachlan.Portfolio.Tests
         }
 
         [TestMethod()]
-        public void BinarySearchTest_QuickSortStrings()
+        public void QuickSort_Strings_Test()
         {
             // Define the alphabet:
             string[] alphabet = new string[26];
@@ -31,7 +30,7 @@ namespace ericmclachlan.Portfolio.Tests
             }
 
             // Get every permutation consisting of 3 letters:
-            var permutations = PermutationHelper.GeneratePermutation(alphabet, 5);
+            var permutations = PermutationHelper.GeneratePermutation(alphabet, 4);
             foreach (var permutation in permutations)
             {
                 // Sort each permutation:
@@ -44,22 +43,8 @@ namespace ericmclachlan.Portfolio.Tests
             }
         }
 
-        public class TestComparable : IComparable
-        {
-            private int id;
-            public TestComparable(int i)
-            {
-                this.id = i;
-            }
-
-            public int CompareTo(object that)
-            {
-                return this.id.CompareTo(((TestComparable)that).id);
-            }
-        }
-
         [TestMethod()]
-        public void BinarySearchTest_QuickSortIComparable()
+        public void QuickSort_IComparable_Test()
         {
             // Calculate all possible permutations of some arbitrary input (in this case integers):
             var permutations = PermutationHelper.GeneratePermutation(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, 5);

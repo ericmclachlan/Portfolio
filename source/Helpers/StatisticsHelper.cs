@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace ericmclachlan.Portfolio
 {
@@ -9,6 +8,12 @@ namespace ericmclachlan.Portfolio
         public static double Significance = Math.Pow(10, -10);
 
         // Public Methods
+
+        /// <summary>Returns true if x and y are virually equal.</summary>
+        public static bool IsApproximatelyEqual(double x, double y)
+        {
+            return x - Significance <= y && y <= x + Significance;
+        }
 
         /// <summary>Returns the index of the maximum value in the set.</summary>
         public static int ArgMax(IList<double> collection)
@@ -101,68 +106,6 @@ namespace ericmclachlan.Portfolio
             return informationGain;
         }
 
-        /// <summary>Performs an in-place normalizes of the specified <c>distribution</c>.</summary>
-        public static void Normalize(double[] distribution)
-        {
-            // Calculate the normalization denominator:
-            double denominator = 0;
-            for (int i = 0; i < distribution.Length; i++)
-            {
-                denominator += distribution[i];
-            }
-
-            // Normalize the distribution.
-            double sanityCheck = 0;
-            for (int i = 0; i < distribution.Length; i++)
-            {
-                distribution[i] = distribution[i] / denominator;
-                sanityCheck += distribution[i];
-            }
-            Debug.Assert(IsApproximatelyEqual(sanityCheck, 1));
-        }
-
-        /// <summary>Normalizes (in-place) a collection of log values.</summary>
-        public static void NormalizeLogs(double[] logs, double logBase)
-        {
-            double max = double.MinValue;
-            // Find the maximum log value.
-            for (int i = 0; i < logs.Length; i++)
-            {
-                if (logs[i] > max)
-                    max = logs[i];
-            }
-            // Calculate the total mass:
-            double totalWeight = 0;
-            double[] weights = new double[logs.Length];
-            for (int i = 0; i < logs.Length; i++)
-            {
-                logs[i] -= max;
-                weights[i] = Math.Pow(logBase, logs[i]);
-                totalWeight += weights[i];
-            }
-            // Normalize the distribution based on their relative mass.
-            for (int i = 0; i < logs.Length; i++)
-            {
-                logs[i] = weights[i] / totalWeight;
-            }
-        }
-
-        /// <summary>Converts the specified values into a distribution.</summary>
-        internal static double[] ConvertToDistribution(double[] values)
-        {
-            double sum = 0;
-            for (int i = 0; i < values.Length; i++)
-            {
-                sum += values[i];
-            }
-            double[] distribution = new double[values.Length];
-            for (int i = 0; i < values.Length; i++)
-            {
-                distribution[i] += values[i] / sum;
-            }
-            return distribution;
-        }
-
         /// <summary>Returns the chi-square value for the given observation table.</summary>
         public static double CalculateChiSquare(double[,] observationTable)
         {
@@ -227,7 +170,6 @@ namespace ericmclachlan.Portfolio
             return (sum_c.Length - 1) * (sum_v.Length - 1);
         }
 
-
         // Private Methods
 
         private static double CalculateEntropys_Subset(double probability)
@@ -238,12 +180,6 @@ namespace ericmclachlan.Portfolio
 
             // TODO: The algorithm can be optimized by removing the negation and working with negative entropy.
             return -1 * probability * Math.Log(probability, 2);
-        }
-
-        /// <summary>Returns true if x and y are virually equal.</summary>
-        internal static bool IsApproximatelyEqual(double x, double y)
-        {
-            return x - Significance <= y && y <= x + Significance;
         }
     }
 }

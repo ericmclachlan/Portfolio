@@ -99,8 +99,8 @@ namespace ericmclachlan.Portfolio
             if (nearestNeighbors.Count < K)
                 Console.Error.WriteLine("Warning: K nearest neighbors could not be found.");
 
-            details = StatisticsHelper.ConvertToDistribution(votes_c);
-            return StatisticsHelper.ArgMax(details);
+            details = NormalizationHelper.CreateNormalizedDistribution(votes_c);
+            return StatisticsHelper.ArgMax(votes_c);
         }
 
 

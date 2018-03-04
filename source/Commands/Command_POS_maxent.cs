@@ -190,7 +190,7 @@ namespace ericmclachlan.Portfolio
                     logProb += classifier.CalculateLogProb_c_f(c_i, prevTwoTags_f);
                     probs_v_c[v_i][c_i] = Math.Pow(Math.E, logProb);
                 }
-                StatisticsHelper.Normalize(probs_v_c[v_i]);
+                NormalizationHelper.Normalize(probs_v_c[v_i]);
                 int bestClass = StatisticsHelper.ArgMax(probs_v_c[v_i]);
                 c_w[v_i] = bestClass;
                 prob_c_w[v_i] = probs_v_c[v_i][bestClass];

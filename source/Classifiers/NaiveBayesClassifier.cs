@@ -92,7 +92,7 @@ namespace ericmclachlan.Portfolio
                 v_logProb_c[c_i] = CalculateLogProb_v_c(vector, c_i);
             }
             // Convert back from log to decimal format.
-            StatisticsHelper.NormalizeLogs(v_logProb_c, 10);
+            NormalizationHelper.NormalizeLogs(v_logProb_c, 10);
             details = v_logProb_c;
             return StatisticsHelper.ArgMax(details);
         }

@@ -174,7 +174,7 @@ namespace ericmclachlan.Portfolio
                     {
                         probs_v_c[c_i] = CalculateProbability_v_c(vectors[beamDepth], c_i, node, beamDepth);
                     }
-                    StatisticsHelper.NormalizeLogs(probs_v_c, Math.E);
+                    NormalizationHelper.NormalizeLogs(probs_v_c, Math.E);
 
                     // Prune: Idenitify N classes with highest probability:
                     IList<int> topNClasses = SearchHelper.GetMaxNItems(topN, probs_v_c);

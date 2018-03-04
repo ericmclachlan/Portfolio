@@ -56,14 +56,17 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Commands\Command_svm_classifyTests.cs" />
-    <Compile Include="Helpers\SortHelperTests.cs" />
+    <Compile Include="Commands\Command_svm_classify_Tests.cs" />
+    <Compile Include="Helpers\NormalizationHelper_Tests.cs" />
+    <Compile Include="Helpers\SearchHelper_Tests.cs" />
+    <Compile Include="Helpers\SortHelper_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TestComparable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
