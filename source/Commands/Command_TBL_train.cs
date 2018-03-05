@@ -4,7 +4,7 @@
     /// <para>This command will train a TBL classifier.</para>
     /// <para>The command line is: TBL_train.sh train_data model_file min_gain.</para>
     /// </summary>
-    internal class Command_TBL_train : Command<bool>
+    internal class Command_TBL_train : Command<int>
     {
         // Properties
 
@@ -12,7 +12,7 @@
 
         /// <summary>Training vector file in text format.</summary>
         [CommandParameter(Index = 0, Type = CommandParameterType.InputFile, Description = "Training vector file in text format.")]
-        public string train_data { get; set; }
+        public string vector_data { get; set; }
 
         /// <summary>This output file contains a serialization of the TBL classifier's model.</summary>
         [CommandParameter(Index = 1, Description = "This output file contains a serialization of the TBL classifier's model.")]
@@ -25,19 +25,19 @@
 
         // Methods
         
-        public override bool ExecuteCommand()
+        public override int ExecuteCommand()
         {
-            FeatureVectorFile vectorFile = new FeatureVectorFile(path: train_data, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_data, noOfHeaderColumns: 1, featureDelimiter: ':', isSortRequired: false);
             int gold_i = 0;
 
-            Program.TrainModel(vectorFile, model_file, featureDelimiter: ' ', isSortRequiredForFeatures: false
-                , classifierFactory: (vectors, classToClassId, featureToFeatureId) =>
+            TBLClassifier classifier = null;
+            Program.TrainModel(vectorFile, model_file, classifierFactory: (vectors, classToClassId, featureToFeatureId) =>
                 {
-                    return new TBLClassifier(vectors, classToClassId.Count, min_gain, gold_i);
+                    return classifier = new TBLClassifier(vectors, classToClassId.Count, min_gain, gold_i);
                 }
-                );
+            );
 
-            return true;
+            return classifier.Transformations.Count;
         }
     }
 }

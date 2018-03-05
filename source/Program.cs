@@ -107,8 +107,6 @@ namespace ericmclachlan.Portfolio
         internal static void TrainModel<T>(
             FeatureVectorFile vector_file
             , string model_file
-            , char featureDelimiter
-            , bool isSortRequiredForFeatures
             , Func<List<FeatureVector>, TextIdMapper, TextIdMapper, T> classifierFactory
             )
             where T: Classifier, ISaveModel

@@ -56,7 +56,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Commands\Command_svm_classify_Tests.cs" />
+    <Compile Include="Commands\Command_SVM_classify_Tests.cs" />
+    <Compile Include="Commands\Command_TBL_Test.cs" />
     <Compile Include="Helpers\NormalizationHelper_Tests.cs" />
     <Compile Include="Helpers\SearchHelper_Tests.cs" />
     <Compile Include="Helpers\SortHelper_Tests.cs" />
@@ -66,6 +67,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TempFile.cs" />
     <Compile Include="TestComparable.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +75,7 @@
     <None Include="Resources\libSVM_model" />
     <None Include="Resources\libSVM_test" />
     <None Include="Resources\libSVM_train" />
+    <None Include="Resources\TBLModel" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\source\ericmclachlan.Portfolio.csproj">
@@ -85,6 +88,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FeatureVectors_train.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FeatureVectors_test.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

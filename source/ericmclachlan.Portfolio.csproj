@@ -81,7 +81,7 @@
   <ItemGroup>
     <Compile Include="Commands\Command_TBL_classify.cs" />
     <Compile Include="Commands\Command_TBL_train.cs" />
-    <Compile Include="Commands\Command_svm_classify.cs" />
+    <Compile Include="Commands\Command_SVM_classify.cs" />
     <Compile Include="DataStructures\BeamNode.cs" />
     <Compile Include="DataStructures\BeamSearch.cs" />
     <Compile Include="Classifiers\DecisionTreeClassifier.cs" />

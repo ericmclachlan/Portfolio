@@ -48,7 +48,7 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public static object Execute(string[] args)
+        public static object Execute(params string[] args)
         {
             // Rare Case: No command is specified.
             if (args.Length == 0)

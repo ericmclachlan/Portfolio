@@ -11,7 +11,7 @@ namespace ericmclachlan.Portfolio
     /// This command will be called like this: TBL_classify.sh <c>vector_file</c> <c>model_file</c> <c>sys_output</c> <c>N</c>
     /// </para>
     /// </summary>
-    internal class Command_TBL_classify : Command<bool>
+    internal class Command_TBL_classify : Command<double>
     {
         // Properties
 
@@ -36,20 +36,20 @@ namespace ericmclachlan.Portfolio
 
         // Methods
 
-        public override bool ExecuteCommand()
+        public override double ExecuteCommand()
         {
             int gold_i = 0;
 
-            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ' ', isSortRequired: false);
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 1, featureDelimiter: ':', isSortRequired: false);
             
-            Program.ReportOnModel(vectorFile, sys_output
+            var accuracy = Program.ReportOnModel(vectorFile, sys_output
                 , classifierFactory: (classToClassId, featureToFeatureId) =>
                 {
                     return TBLClassifier.LoadModel(model_file, classToClassId, featureToFeatureId, N, gold_i);
                 }
                 , getDetailsFunc: GetDetails
             );
-            return true;
+            return accuracy;
         }
 
         private static string[] GetDetails(Classifier classifier, List<FeatureVector> vectors, TextIdMapper classToClassId, TextIdMapper featureToFeatureId)

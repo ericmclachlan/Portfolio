@@ -12,7 +12,13 @@ namespace ericmclachlan.Portfolio
         /// <summary>Returns true if x and y are virually equal.</summary>
         public static bool IsApproximatelyEqual(double x, double y)
         {
-            return x - Significance <= y && y <= x + Significance;
+            return Math.Abs(x - y) < Significance;
+        }
+
+        /// <summary>Returns true if x and y are equal up to the <c>significant</c> decimal places.</summary>
+        public static bool IsApproximatelyEqual(double x, double y, int significant)
+        {
+            return Math.Abs(x - y) < Math.Pow(10, -significant);
         }
 
         /// <summary>Returns the index of the maximum value in the set.</summary>

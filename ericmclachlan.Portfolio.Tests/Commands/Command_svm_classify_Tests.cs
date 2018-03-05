@@ -5,7 +5,7 @@ using System.IO;
 namespace ericmclachlan.Portfolio.Tests
 {
     [TestClass()]
-    public class Command_svm_classifyTests
+    public class Command_SVM_classify_Tests
     {
         [TestMethod()]
         public void ExecuteCommand_svm_classify_Test()

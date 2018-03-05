@@ -61,6 +61,24 @@ namespace ericmclachlan.Portfolio.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to talk.politics.guns  a:1 after:1 amend:1 an:1 and:1 are:1 article:1 att:1 available:1 be:1 been:1 big:1 bill:1 c:1 cb:1 cbnews:1 cipriani:1 code:1 com:1 date:1 demonstrated:1 down:1 ensure:1 ever:1 final:1 government:1 graph:1 gridlock:1 growth:1 h:1 handgun:1 handguns:1 has:1 in:1 individual:1 is:1 issued:1 knowledge:1 larry:1 licensed:1 licensing:1 lvc:1 maintenance:1 may:1 mechanism:1 not:1 note:1 nu:1 of:1 on:1 only:1 or:1 para:1 paragraph:1 permit:1 persons:1 possess:1 posting:1 prescribed:1 pretending: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string FeatureVectors_test {
+            get {
+                return ResourceManager.GetString("FeatureVectors_test", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to talk.politics.guns  a:1 about:1 absurd:1 again:1 an:1 and:1 any:1 approaching:1 are:1 argument:1 article:1 as:1 associates:1 at:1 average:1 bait:1 be:1 being:1 betraying:1 better:1 bms:1 by:1 c:1 calculator:1 capita:1 choice:1 chrissakes:1 citizen:1 com:1 crow:1 dangerous:1 deaths:1 die:1 easier:1 eigth:1 enuff:1 expressed:1 feel:1 fifth:1 for:1 former:1 given:1 had:1 hambidge:1 handgun:1 has:1 hav:1 here:1 higher:1 homicides:1 how:1 i:1 if:1 importantly:1 in:1 individual:1 is:1 it:1 killed:1 lack:1 latter: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string FeatureVectors_train {
+            get {
+                return ResourceManager.GetString("FeatureVectors_train", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to svm_type c_svc
         ///kernel_type linear
         ///nr_class 2
@@ -69,7 +87,7 @@ namespace ericmclachlan.Portfolio.Tests.Properties {
         ///label 0 1
         ///nr_sv 272 263
         ///SV
-        ///0.004437478408154137 0:1 1:1 2:1 3:1 4:1 5:1 6:1 7:1 8:1 9:1 10:1 11:1 12:1 13:1 14:1 15:1 16:1 17:1 18:1 19:1 20:1 21:1 22:1 23:1 24:1 25:1 26:1 27:1 28:1 29:1 30:1 31:1 32:1 33:1 34:1 35:1 36:1 37:1 38:1 39:1 40:1 41:1 42:1 43:1 44:1 45:1 46:1 47:1 48:1 49:1 50:1 51:1 52:1 53:1 54:1 55:1 56:1 57:1 58:1 59:1 60:1 61:1 62:1 63:1 64:1 65:1 66:1 67:1 68:1 69:1 70:1 71:1 72:1 73:1 74:1 75:1 76:1 77:1 78:1 79:1 80: [rest of string was truncated]&quot;;.
+        ///0.004437478408154137 0:1 1:1 2:1 3:1 4:1 5:1 6:1 7:1 8:1 9:1 10:1 11:1 12:1 13:1 14:1 15:1 16:1 17:1 18:1 19:1 20:1 21:1 22:1 23:1 24:1 25:1 26:1 27:1 28:1 29:1 30:1 31:1 32:1 33:1 34:1 35:1 36:1 37:1 38:1 39:1 40:1 41:1 42:1 43:1 44:1 45:1 46:1 47:1 48:1 49:1 50:1 51:1 52:1 53:1 54:1 55:1 56:1 57:1 58:1 59:1 60:1 61:1 62:1 63:1 64:1 65:1 66:1 67:1 68:1 69:1 70:1 71:1 72:1 73:1 74:1 75:1 76:1 77:1 78:1  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string libSVM_model {
             get {
@@ -92,6 +110,25 @@ namespace ericmclachlan.Portfolio.Tests.Properties {
         internal static string libSVM_train {
             get {
                 return ResourceManager.GetString("libSVM_train", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to talk.politics.guns 
+        ///israel talk.politics.guns talk.politics.mideast 323
+        ///turkish talk.politics.guns talk.politics.mideast 181
+        ///clayton talk.politics.guns talk.politics.misc 111
+        ///money talk.politics.guns talk.politics.misc 82
+        ///arab talk.politics.guns talk.politics.mideast 63
+        ///muslims talk.politics.guns talk.politics.mideast 46
+        ///president talk.politics.guns talk.politics.misc 40
+        ///israeli talk.politics.guns talk.politics.mideast 36
+        ///health talk.politics.guns talk.politics.misc 35
+        ///hallam talk.politics.guns talk.politic [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string TBLModel {
+            get {
+                return ResourceManager.GetString("TBLModel", resourceCulture);
             }
         }
     }

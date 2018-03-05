@@ -46,7 +46,11 @@ namespace ericmclachlan.Portfolio
 
         protected override void Train()
         {
-            int[] sysClasses = ApplyInitialCategorization(TrainingVectors.ToArray());
+            // If loaded from a model file, the training vectors collection will be uninitialized.
+            if (TrainingVectors == null)
+                return;
+
+            int[] sysClasses = ApplyInitialCategorization(TrainingVectors.Count);
             // Keep improving with each iteration; until the improvement is less than the MinGain threshold.
             while (true)
             {
@@ -144,10 +148,10 @@ namespace ericmclachlan.Portfolio
             return sysClass;
         }
 
-        private int[] ApplyInitialCategorization(params FeatureVector[] vectors)
+        private int[] ApplyInitialCategorization(int capacity)
         {
             // Dumb baseline: Defaults the classification for all vectors to the first class (classId = 0).
-            int[] sysClasses = new int[vectors.Length];
+            int[] sysClasses = new int[capacity];
             for (int i = 0; i < sysClasses.Length; i++)
             {
                 sysClasses[i] = _defaultClass;
