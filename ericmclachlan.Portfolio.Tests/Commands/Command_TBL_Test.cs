@@ -1,6 +1,5 @@
 ﻿using ericmclachlan.Portfolio.Tests.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
 
 namespace ericmclachlan.Portfolio.Tests
 {
@@ -10,66 +9,49 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void Command_TBL_Test1()
         {
-            using (var modelFile = new TempFile())
+            using (var train_inFile = new TempFile(Resources.FeatureVectors_train))
+            using (var model_outFile = new TempFile())
             {
-                using (var trainFile = new TempFile())
-                {
-                    File.WriteAllText(trainFile.Path, Resources.FeatureVectors_train);
+                int min_gain = 30;
 
-                    // Initialize the commmand parameters:
-                    int min_gain = 30;
-                    object result = CommandPlatform.Execute("TBL_train", trainFile.Path, modelFile.Path, min_gain.ToString());
-                    Assert.AreEqual(result, 10);
-                }                
+                int noOfTransformations = (int)CommandPlatform.Execute(
+                    "TBL_train"
+                    , train_inFile.Location
+                    , model_outFile.Location
+                    , min_gain.ToString());
+
+                Assert.AreEqual(noOfTransformations, 10);
             }
         }
 
         [TestMethod()]
         public void Command_TBL_Classify()
         {
-            using (var modelFile = new TempFile())
+            using (var modelFile = new TempFile(Resources.TBLModel))
+            using (var testFile = new TempFile(Resources.FeatureVectors_test))
+            using (var sysOutputFile = new TempFile())
             {
-                File.WriteAllText(modelFile.Path, Resources.TBLModel);
+                // Set up the output parameters:
+                double accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "1");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.41667, 4));
 
-                using (var testFile = new TempFile())
-                {
-                    File.WriteAllText(testFile.Path, Resources.FeatureVectors_test);
-                    using (var sysOutputFile = new TempFile())
-                    {
-                        // Set up the output parameters:
-                        string sys_output = "sys_output";
-                        try
-                        {
-                            double accuracy;
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "1");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.41667, 4));
+                accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "5");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.63667, 4));
 
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "5");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.63667, 4));
+                accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "10");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.69667, 4));
 
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "10");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.69667, 4));
+                accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "20");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.74000, 4));
 
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "20");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.74000, 4));
+                accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "50");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.76333, 4));
 
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "50");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.76333, 4));
+                accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "100");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.78667, 4));
 
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "100");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.78667, 4));
-
-                            accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Path, modelFile.Path, sys_output, "200");
-                            Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.77333, 4));
-                        }
-                        finally
-                        {
-                            // Cleanup the output file.
-                            if (File.Exists(sys_output))
-                                File.Delete(sys_output);
-                        }
-                    }
-                }
+                accuracy = (double)CommandPlatform.Execute("TBL_classify", testFile.Location, modelFile.Location, sysOutputFile.Location, "200");
+                Assert.IsTrue(StatisticsHelper.IsApproximatelyEqual(accuracy, 0.77333, 4));
             }
         }
     }

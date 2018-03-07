@@ -56,7 +56,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Commands\Command_SVM_classify_Tests.cs" />
+    <Compile Include="Commands\Command_BeamSearch_MaxEnt_Tests.cs" />
+    <Compile Include="Commands\Command_SVM_Classify_Tests.cs" />
     <Compile Include="Commands\Command_TBL_Test.cs" />
     <Compile Include="Helpers\NormalizationHelper_Tests.cs" />
     <Compile Include="Helpers\SearchHelper_Tests.cs" />
@@ -94,6 +95,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FeatureVectors_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MaxEnt_Model.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\POS_Vectors_Boundaries.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\POS_Vectors.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

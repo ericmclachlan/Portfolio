@@ -12,14 +12,20 @@ namespace ericmclachlan.Portfolio.Tests
         // Members
 
         /// <summary>This is the location of the physical temporary file.</summary>
-        internal string Path { get; private set; }
+        internal string Location { get; private set; }
 
 
         // Construction
 
         internal TempFile()
         {
-            Path = System.IO.Path.GetTempFileName();
+            Location = Path.GetTempFileName();
+        }
+
+        internal TempFile(string contents)
+        {
+            Location = Path.GetTempFileName();
+            File.WriteAllText(Location, contents);
         }
 
 
@@ -27,10 +33,11 @@ namespace ericmclachlan.Portfolio.Tests
 
         public void Dispose()
         {
-            if (Path != null && File.Exists(Path))
+            if (Location != null && File.Exists(Location))
             {
-                File.Delete(Path);
-                Debug.Assert(!File.Exists(Path));
+                File.Delete(Location);
+                Debug.Assert(!File.Exists(Location));
+                Location = null;
             }
         }
     }

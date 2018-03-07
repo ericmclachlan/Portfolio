@@ -114,6 +114,227 @@ namespace ericmclachlan.Portfolio.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FEATURES FOR CLASS NNP
+        /// &lt;default&gt; 3.7912278052488615
+        /// curW=Pierre 1.0055824571891294
+        /// prevW=BOS 0.15158438156724433
+        /// prev2W=BOS -0.042484272090335465
+        /// next2W=comma 0.7376566212571102
+        /// prevT=BOS 0.15158438156724433
+        /// prevTwoTags=BOS+BOS 0.15158438156724433
+        /// nextW=comma 0.9811762303347142
+        /// next2W=61 0.10291483661846342
+        /// prevT=NNP 2.689252489575855
+        /// prevTwoTags=BOS+NNP 0.35960803637958344
+        /// containUC 3.966119316223147
+        /// pref=V 0.5261420258668185
+        /// pref=Vi -0.41208112866815233
+        /// suf=n -0.3092633085823188
+        /// suf=en -0. [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string MaxEnt_Model {
+            get {
+                return ResourceManager.GetString("MaxEnt_Model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1-0-The DT curW=The 1 prevW=BOS 1 prev2W=BOS 1 nextW=Arizona 1
+        ///1-1-Arizona NNP curW=Arizona 1 prevW=The 1 prev2W=BOS 1 next2W=Commission 1
+        ///1-2-Corporations NNP prevW=Arizona 1 prev2W=The 1 nextW=Commission 1 next2W=authorized 1 containUC 1 pref=C 1 pref=Co 1 pref=Cor 1 suf=s 1 suf=ns 1 suf=ons 1 suf=ions 1
+        ///1-3-Commission NNP curW=Commission 1 prev2W=Arizona 1 nextW=authorized 1 next2W=an 1
+        ///1-4-authorized VBD curW=authorized 1 prevW=Commission 1 nextW=an 1 next2W=11.5 1
+        ///1-5-an DT curW=an 1 prevW=authorized 1 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string POS_Vectors {
+            get {
+                return ResourceManager.GetString("POS_Vectors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 37
+        ///41
+        ///28
+        ///14
+        ///8
+        ///21
+        ///25
+        ///31
+        ///34
+        ///22
+        ///26
+        ///20
+        ///22
+        ///31
+        ///30
+        ///28
+        ///25
+        ///12
+        ///27
+        ///17
+        ///32
+        ///21
+        ///27
+        ///23
+        ///17
+        ///20
+        ///29
+        ///9
+        ///13
+        ///18
+        ///35
+        ///34
+        ///18
+        ///12
+        ///28
+        ///24
+        ///20
+        ///17
+        ///8
+        ///22
+        ///15
+        ///21
+        ///19
+        ///20
+        ///32
+        ///31
+        ///23
+        ///13
+        ///13
+        ///22
+        ///27
+        ///51
+        ///28
+        ///22
+        ///31
+        ///13
+        ///15
+        ///39
+        ///9
+        ///33
+        ///17
+        ///14
+        ///9
+        ///27
+        ///18
+        ///22
+        ///36
+        ///15
+        ///26
+        ///10
+        ///13
+        ///36
+        ///53
+        ///24
+        ///35
+        ///26
+        ///26
+        ///17
+        ///18
+        ///20
+        ///36
+        ///37
+        ///13
+        ///30
+        ///28
+        ///42
+        ///21
+        ///11
+        ///17
+        ///23
+        ///23
+        ///21
+        ///32
+        ///9
+        ///19
+        ///25
+        ///27
+        ///7
+        ///16
+        ///28
+        ///26
+        ///38
+        ///44
+        ///24
+        ///28
+        ///31
+        ///34
+        ///33
+        ///32
+        ///41
+        ///35
+        ///14
+        ///31
+        ///29
+        ///19
+        ///28
+        ///18
+        ///31
+        ///19
+        ///27
+        ///26
+        ///36
+        ///14
+        ///40
+        ///21
+        ///41
+        ///35
+        ///21
+        ///30
+        ///22
+        ///10
+        ///28
+        ///27
+        ///28
+        ///30
+        ///32
+        ///58
+        ///13
+        ///14
+        ///13
+        ///34
+        ///36
+        ///43
+        ///14
+        ///26
+        ///16
+        ///11
+        ///30
+        ///21
+        ///12
+        ///37
+        ///10
+        ///26
+        ///23
+        ///27
+        ///59
+        ///40
+        ///18
+        ///38
+        ///39
+        ///23
+        ///5
+        ///34
+        ///12
+        ///33
+        ///49
+        ///11
+        ///38
+        ///26
+        ///16
+        ///38
+        ///10
+        ///34
+        ///9 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string POS_Vectors_Boundaries {
+            get {
+                return ResourceManager.GetString("POS_Vectors_Boundaries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to talk.politics.guns 
         ///israel talk.politics.guns talk.politics.mideast 323
         ///turkish talk.politics.guns talk.politics.mideast 181

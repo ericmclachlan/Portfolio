@@ -136,4 +136,13 @@
   <data name="TBLModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TBLModel;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="MaxEnt_Model" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MaxEnt_Model.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="POS_Vectors" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\POS_Vectors.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="POS_Vectors_Boundaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\POS_Vectors_Boundaries.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

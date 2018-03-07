@@ -52,19 +52,22 @@ namespace ericmclachlan.Portfolio
         /// <param name="significantDifference">
         /// Ignore weights that <c>significantDifference</c> from the most optimal node at this level.
         /// </param>
-        internal void Prune(int k, double significantDifference)
+        /// <param name="maxNodes">
+        /// The max number of nodes preserved for the whole level.
+        /// </param>
+        internal void Prune(int maxNodes, double significantDifference)
         {
-            Debug.Assert(k > 0);
+            Debug.Assert(maxNodes > 0);
 
             int maxLevel = Level.Count - 1;
             // Minor optimization: Early exit if pruning is not required.
-            if (Level[maxLevel].Count <= k)
+            if (Level[maxLevel].Count <= maxNodes)
                 return;
 
             // Clone the list:
             Debug.Assert(Level[maxLevel].Count > 0);
             BeamNode<T>[] items = Level[maxLevel].ToArray();
-            IList<int> topKItems = SearchHelper.GetMaxNItems(k, items);
+            IList<int> topKItems = SearchHelper.GetMaxNItems(maxNodes, items);
             double highestWeight = items[topKItems[0]].Weight;
             Level[maxLevel].Clear();
             foreach (var winner in topKItems)

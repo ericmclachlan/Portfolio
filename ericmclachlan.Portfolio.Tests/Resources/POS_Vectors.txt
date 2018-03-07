@@ -1,0 +1,32 @@
+21-0-The DT curW=The 1 prevW=BOS 1 prev2W=BOS 1 nextW=proposed 1 next2W=holding 1
+21-1-proposed JJ curW=proposed 1 prevW=The 1 prev2W=BOS 1 nextW=holding 1 next2W=company 1
+21-2-holding NN curW=holding 1 prevW=proposed 1 prev2W=The 1 nextW=company 1 next2W=would 1
+21-3-company NN curW=company 1 prevW=holding 1 prev2W=proposed 1 nextW=would 1 next2W=also 1
+21-4-would MD curW=would 1 prevW=company 1 prev2W=holding 1 nextW=also 1
+21-5-also RB curW=also 1 prevW=would 1 prev2W=company 1 next2W=Great 1
+21-6-consolidate VB curW=consolidate 1 prevW=also 1 prev2W=would 1 nextW=Great 1 next2W=American 1
+21-7-Great NNP curW=Great 1 prev2W=also 1 nextW=American 1 next2W=Bank 1
+21-8-American NNP curW=American 1 prevW=Great 1 nextW=Bank 1 next2W=in 1
+21-9-Bank NNP curW=Bank 1 prevW=American 1 prev2W=Great 1 nextW=in 1 next2W=San 1
+21-10-in IN curW=in 1 prevW=Bank 1 prev2W=American 1 nextW=San 1 next2W=Diego 1
+21-11-San NNP curW=San 1 prevW=in 1 prev2W=Bank 1 nextW=Diego 1 next2W=and 1
+21-12-Diego NNP curW=Diego 1 prevW=San 1 prev2W=in 1 nextW=and 1 next2W=its 1
+21-13-and CC curW=and 1 prevW=Diego 1 prev2W=San 1 nextW=its 1
+21-14-its PRP$ curW=its 1 prevW=and 1 prev2W=Diego 1 next2W=comma 1
+21-15-Tucson NNP curW=Tucson 1 prevW=its 1 prev2W=and 1 nextW=comma 1 next2W=Ariz. 1
+21-16-comma comma curW=comma 1 prev2W=its 1 nextW=Ariz. 1 next2W=comma 1
+21-17-Ariz. NNP curW=Ariz. 1 prevW=comma 1 nextW=comma 1 next2W=savings 1
+21-18-comma comma curW=comma 1 prevW=Ariz. 1 prev2W=comma 1 nextW=savings 1 next2W=bank 1
+21-19-savings NNS curW=savings 1 prevW=comma 1 prev2W=Ariz. 1 nextW=bank 1 next2W=into 1
+21-20-bank NN curW=bank 1 prevW=savings 1 prev2W=comma 1 nextW=into 1 next2W=a 1
+21-21-into IN curW=into 1 prevW=bank 1 prev2W=savings 1 nextW=a 1 next2W=single 1
+21-22-a DT curW=a 1 prevW=into 1 prev2W=bank 1 nextW=single 1 next2W=comma 1
+21-23-single JJ curW=single 1 prevW=a 1 prev2W=into 1 nextW=comma 1 next2W=federally 1
+21-24-comma comma curW=comma 1 prevW=single 1 prev2W=a 1 nextW=federally 1
+21-25-federally RB curW=federally 1 prevW=comma 1 prev2W=single 1 next2W=institution 1
+21-26-chartered JJ curW=chartered 1 prevW=federally 1 prev2W=comma 1 nextW=institution 1 next2W=in 1
+21-27-institution NN curW=institution 1 prev2W=federally 1 nextW=in 1 next2W=San 1
+21-28-in IN curW=in 1 prevW=institution 1 nextW=San 1 next2W=Diego 1
+21-29-San NNP curW=San 1 prevW=in 1 prev2W=institution 1 nextW=Diego 1 next2W=. 1
+21-30-Diego NNP curW=Diego 1 prevW=San 1 prev2W=in 1 nextW=. 1 next2W=EOS 1
+21-31-. . curW=. 1 prevW=Diego 1 prev2W=San 1 nextW=EOS 1 next2W=EOS 1

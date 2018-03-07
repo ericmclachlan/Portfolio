@@ -19,7 +19,7 @@ namespace ericmclachlan.Portfolio
         [CommandParameter(Index = 0, Description = "Vector file in text format.")]
         public string vector_file { get; set; }
 
-        [CommandParameter(Index = 1, Description = "This file contains one number per line, which is the length of a sentence.")]
+        [CommandParameter(Index = 1, Description = "This file contains one number per line, which indicates the length of a sentence.")]
         /// <summary>This file contains one number per line, which is the length of a sentence.</summary>
         public string boundary_file { get; set; }
 
@@ -64,7 +64,7 @@ namespace ericmclachlan.Portfolio
             var instanceNameToId = new TextIdMapper();
             TextIdMapper[] headerToHeaderIds = new TextIdMapper[] { instanceNameToId, classToClassId };
 
-            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 2, featureDelimiter: ':', isSortRequired: false);
+            FeatureVectorFile vectorFile = new FeatureVectorFile(path: vector_file, noOfHeaderColumns: 2, featureDelimiter: ' ', isSortRequired: false);
 
             // Read the boundaries:
             int[] sentenceLengths = ReadBoundaryFile(boundary_file);
