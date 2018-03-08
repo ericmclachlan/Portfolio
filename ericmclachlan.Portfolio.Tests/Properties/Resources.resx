@@ -145,4 +145,13 @@
   <data name="POS_Vectors_Boundaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\POS_Vectors_Boundaries.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="Model_MaxEnt_Mallet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Model_MaxEnt_Mallet.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="SVMLight_TestVectors" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SVMLight_TestVectors.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="SVMLight_TrainVectors" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SVMLight_TrainVectors.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

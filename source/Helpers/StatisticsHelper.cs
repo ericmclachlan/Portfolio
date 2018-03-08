@@ -15,10 +15,15 @@ namespace ericmclachlan.Portfolio
             return Math.Abs(x - y) < Significance;
         }
 
-        /// <summary>Returns true if x and y are equal up to the <c>significant</c> decimal places.</summary>
-        public static bool IsApproximatelyEqual(double x, double y, int significant)
+        /// <summary>Returns true if x and y are equal up to <c>decimals</c> places.</summary>
+        public static bool IsApproximatelyEqual(double x, double y, int decimals)
         {
-            return Math.Abs(x - y) < Math.Pow(10, -significant);
+            if (decimals < 0 || decimals > 15)
+                throw new ArgumentOutOfRangeException("Argument must be between 0 and 15 decimal places");
+
+            x = Math.Round(x, decimals);
+            y = Math.Round(y, decimals);
+            return Math.Abs(x - y) <= Significance;
         }
 
         /// <summary>Returns the index of the maximum value in the set.</summary>

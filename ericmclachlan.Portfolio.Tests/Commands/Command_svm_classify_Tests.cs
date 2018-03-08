@@ -10,8 +10,8 @@ namespace ericmclachlan.Portfolio.Tests
         public void ExecuteCommand_svm_classify_Test()
         {
             // Set up the parameters:
-            using (var model_inFile = new TempFile(Resources.libSVM_model))
             using (var vectors_inFile = new TempFile(Resources.libSVM_test))
+            using (var model_inFile = new TempFile(Resources.libSVM_model))
             using (var sys_outFile = new TempFile())
             {
                 // Initialize the commmand parameters:

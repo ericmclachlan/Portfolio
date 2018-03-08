@@ -40,11 +40,11 @@ namespace ericmclachlan.Portfolio
             double[,] observation, expectation;
             CalculateObservationAndEmpiricalExpectation(trainingVectors, out observation, out expectation);
 
-            OutputEmpiricalCount(observation, expectation, requiresSort:true);
+            OutputEmpiricalCount(observation, expectation);
             return true;
         }
 
-        private void OutputEmpiricalCount(double[,] observation, double[,] expectation, bool requiresSort)
+        private void OutputEmpiricalCount(double[,] observation, double[,] expectation)
         {
             for (int c_i = 0; c_i < classToClassId.Count; c_i++)
             {
@@ -53,8 +53,7 @@ namespace ericmclachlan.Portfolio
                 {
                     output.Add(string.Format("{0}\t{1}\t{2:0.00000}\t{3}", classToClassId[c_i], featureToFeatureId[f_i], expectation[f_i, c_i], observation[f_i, c_i]));
                 }
-                if (requiresSort)
-                    output.Sort();
+                output.Sort();
                 foreach (var item in output)
                 {
                     Console.WriteLine(item);

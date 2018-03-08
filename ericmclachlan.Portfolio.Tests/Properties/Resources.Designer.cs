@@ -139,12 +139,40 @@ namespace ericmclachlan.Portfolio.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1-0-The DT curW=The 1 prevW=BOS 1 prev2W=BOS 1 nextW=Arizona 1
-        ///1-1-Arizona NNP curW=Arizona 1 prevW=The 1 prev2W=BOS 1 next2W=Commission 1
-        ///1-2-Corporations NNP prevW=Arizona 1 prev2W=The 1 nextW=Commission 1 next2W=authorized 1 containUC 1 pref=C 1 pref=Co 1 pref=Cor 1 suf=s 1 suf=ns 1 suf=ons 1 suf=ions 1
-        ///1-3-Commission NNP curW=Commission 1 prev2W=Arizona 1 nextW=authorized 1 next2W=an 1
-        ///1-4-authorized VBD curW=authorized 1 prevW=Commission 1 nextW=an 1 next2W=11.5 1
-        ///1-5-an DT curW=an 1 prevW=authorized 1 [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to FEATURES FOR CLASS talk.politics.guns
+        /// &lt;default&gt; -0.1583551304403412
+        /// a -0.18898126800339418
+        /// about 0.0832704303587203
+        /// absurd 0.08705561748697474
+        /// again -0.19321273294161795
+        /// an -0.17024317523326235
+        /// and 0.24996307517095412
+        /// any -0.0769791550753222
+        /// approaching -0.021386303178712065
+        /// are -0.20894266136570772
+        /// argument -0.057778623605044696
+        /// article -0.21237035159475048
+        /// as 0.20698090761272375
+        /// associates 0.07576433030431617
+        /// at -0.07586261853721844
+        /// average 0.057213133953750335
+        /// bait 0.1937802611630568
+        /// be [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Model_MaxEnt_Mallet {
+            get {
+                return ResourceManager.GetString("Model_MaxEnt_Mallet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 21-0-The DT curW=The 1 prevW=BOS 1 prev2W=BOS 1 nextW=proposed 1 next2W=holding 1
+        ///21-1-proposed JJ curW=proposed 1 prevW=The 1 prev2W=BOS 1 nextW=holding 1 next2W=company 1
+        ///21-2-holding NN curW=holding 1 prevW=proposed 1 prev2W=The 1 nextW=company 1 next2W=would 1
+        ///21-3-company NN curW=company 1 prevW=holding 1 prev2W=proposed 1 nextW=would 1 next2W=also 1
+        ///21-4-would MD curW=would 1 prevW=company 1 prev2W=holding 1 nextW=also 1
+        ///21-5-also RB curW=also 1 prevW=would 1 prev2W=company 1 next2W=Great 1
+        ///21-6-conso [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string POS_Vectors {
             get {
@@ -153,184 +181,29 @@ namespace ericmclachlan.Portfolio.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 37
-        ///41
-        ///28
-        ///14
-        ///8
-        ///21
-        ///25
-        ///31
-        ///34
-        ///22
-        ///26
-        ///20
-        ///22
-        ///31
-        ///30
-        ///28
-        ///25
-        ///12
-        ///27
-        ///17
-        ///32
-        ///21
-        ///27
-        ///23
-        ///17
-        ///20
-        ///29
-        ///9
-        ///13
-        ///18
-        ///35
-        ///34
-        ///18
-        ///12
-        ///28
-        ///24
-        ///20
-        ///17
-        ///8
-        ///22
-        ///15
-        ///21
-        ///19
-        ///20
-        ///32
-        ///31
-        ///23
-        ///13
-        ///13
-        ///22
-        ///27
-        ///51
-        ///28
-        ///22
-        ///31
-        ///13
-        ///15
-        ///39
-        ///9
-        ///33
-        ///17
-        ///14
-        ///9
-        ///27
-        ///18
-        ///22
-        ///36
-        ///15
-        ///26
-        ///10
-        ///13
-        ///36
-        ///53
-        ///24
-        ///35
-        ///26
-        ///26
-        ///17
-        ///18
-        ///20
-        ///36
-        ///37
-        ///13
-        ///30
-        ///28
-        ///42
-        ///21
-        ///11
-        ///17
-        ///23
-        ///23
-        ///21
-        ///32
-        ///9
-        ///19
-        ///25
-        ///27
-        ///7
-        ///16
-        ///28
-        ///26
-        ///38
-        ///44
-        ///24
-        ///28
-        ///31
-        ///34
-        ///33
-        ///32
-        ///41
-        ///35
-        ///14
-        ///31
-        ///29
-        ///19
-        ///28
-        ///18
-        ///31
-        ///19
-        ///27
-        ///26
-        ///36
-        ///14
-        ///40
-        ///21
-        ///41
-        ///35
-        ///21
-        ///30
-        ///22
-        ///10
-        ///28
-        ///27
-        ///28
-        ///30
-        ///32
-        ///58
-        ///13
-        ///14
-        ///13
-        ///34
-        ///36
-        ///43
-        ///14
-        ///26
-        ///16
-        ///11
-        ///30
-        ///21
-        ///12
-        ///37
-        ///10
-        ///26
-        ///23
-        ///27
-        ///59
-        ///40
-        ///18
-        ///38
-        ///39
-        ///23
-        ///5
-        ///34
-        ///12
-        ///33
-        ///49
-        ///11
-        ///38
-        ///26
-        ///16
-        ///38
-        ///10
-        ///34
-        ///9 [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to 32.
         /// </summary>
         internal static string POS_Vectors_Boundaries {
             get {
                 return ResourceManager.GetString("POS_Vectors_Boundaries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to talk.politics.guns  a:1 after:1 amend:1 an:1 and:1 are:1 article:1 att:1 available:1 be:1 been:1 big:1 bill:1 c:1 cb:1 cbnews:1 cipriani:1 code:1 com:1 date:1 demonstrated:1 down:1 ensure:1 ever:1 final:1 government:1 graph:1 gridlock:1 growth:1 h:1 handgun:1 handguns:1 has:1 in:1 individual:1 is:1 issued:1 knowledge:1 larry:1 licensed:1 licensing:1 lvc:1 maintenance:1 may:1 mechanism:1 not:1 note:1 nu:1 of:1 on:1 only:1 or:1 para:1 paragraph:1 permit:1 persons:1 possess:1 posting:1 prescribed:1 pretending: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SVMLight_TestVectors {
+            get {
+                return ResourceManager.GetString("SVMLight_TestVectors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to talk.politics.guns  a:1 about:1 absurd:1 again:1 an:1 and:1 any:1 approaching:1 are:1 argument:1 article:1 as:1 associates:1 at:1 average:1 bait:1 be:1 being:1 betraying:1 better:1 bms:1 by:1 c:1 calculator:1 capita:1 choice:1 chrissakes:1 citizen:1 com:1 crow:1 dangerous:1 deaths:1 die:1 easier:1 eigth:1 enuff:1 expressed:1 feel:1 fifth:1 for:1 former:1 given:1 had:1 hambidge:1 handgun:1 has:1 hav:1 here:1 higher:1 homicides:1 how:1 i:1 if:1 importantly:1 in:1 individual:1 is:1 it:1 killed:1 lack:1 latter: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SVMLight_TrainVectors {
+            get {
+                return ResourceManager.GetString("SVMLight_TrainVectors", resourceCulture);
             }
         }
         

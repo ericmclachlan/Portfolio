@@ -15,11 +15,7 @@ rank_feat_by_chi_square < ..\examples\train.vectors.txt
 
 # Hw5.Q2:
 maxent_classify ..\examples\test2.vectors.txt q1\m1.txt sys_output
-
-# Hw5.Q3:
 calc_emp_exp ..\examples\train2.vectors.txt
-
-# Hw5.Q4:
 calc_model_exp ..\examples\train2.vectors.txt
 calc_model_exp ..\examples\train2.vectors.txt q1\m1.txt
 
@@ -35,6 +31,9 @@ TBL_classify ..\examples\test2.txt  model_file sys_output 1 > acc_test
 # Hw8
 svm_classify ..\examples\libSVM_test ..\examples\libSVM_model sys_output
 
+#Hw10
+
+	
 Copying Files
 -------------
 
