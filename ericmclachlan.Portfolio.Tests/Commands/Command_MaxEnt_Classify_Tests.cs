@@ -1,4 +1,6 @@
-﻿using ericmclachlan.Portfolio.Tests.Properties;
+﻿using ericmclachlan.Portfolio.ConsoleApp;
+using ericmclachlan.Portfolio.Core;
+using ericmclachlan.Portfolio.Tests.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ericmclachlan.Portfolio.Tests

@@ -83,12 +83,6 @@
     <None Include="Resources\TBLModel" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\source\ericmclachlan.Portfolio.csproj">
-      <Project>{685A08A5-9893-440F-8603-D822FCFC35A1}</Project>
-      <Name>ericmclachlan.Portfolio</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -120,6 +114,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Model_MaxEnt_Mallet.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ericmclachlan.Portfolio.ConsoleApp\ericmclachlan.Portfolio.ConsoleApp.csproj">
+      <Project>{32f1cb7f-978e-4c89-88a5-71231c7cf1ca}</Project>
+      <Name>ericmclachlan.Portfolio.ConsoleApp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ericmclachlan.Portfolio.Core\ericmclachlan.Portfolio.Core.csproj">
+      <Project>{685a08a5-9893-440f-8603-d822fcfc35a1}</Project>
+      <Name>ericmclachlan.Portfolio.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

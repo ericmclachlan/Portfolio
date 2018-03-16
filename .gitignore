@@ -14,3 +14,7 @@
 /ericmclachlan.Portfolio.Tests/bin
 /.axoCover/runs
 /WIP.playlist
+/ericmclachlan.Portfolio.ConsoleApp/bin/Debug
+/ericmclachlan.Portfolio.ConsoleApp/obj/Debug
+/ericmclachlan.Portfolio.Core/bin/Debug
+/ericmclachlan.Portfolio.Core/obj/Debug

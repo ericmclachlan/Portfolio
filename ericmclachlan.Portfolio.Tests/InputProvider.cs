@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ericmclachlan.Portfolio.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
