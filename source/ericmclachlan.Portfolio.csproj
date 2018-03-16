@@ -99,7 +99,7 @@
     <Compile Include="DataStructures\ConfusionMatrix.cs" />
     <Compile Include="DataStructures\FeatureVectorFile.cs" />
     <Compile Include="Helpers\NormalizationHelper.cs" />
-    <Compile Include="Helpers\PermutationHelper.cs" />
+    <Compile Include="Helpers\CombinatoricsHelper.cs" />
     <Compile Include="Classifiers\SVMClassifier.cs" />
     <Compile Include="DataStructures\ValueCollection.cs" />
     <Compile Include="Commands\Command.cs" />

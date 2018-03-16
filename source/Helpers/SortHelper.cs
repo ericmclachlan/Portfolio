@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ericmclachlan.Portfolio
 {
     public static class SortHelper
     {
         /// <summary>Performs an in-place sort of the specified <c>items</c>.</summary>
-        public static void QuickSort<T>(T[] items)
+        public static void QuickSort<T>(IList<T> items)
             where T : IComparable
         {
-            if (items == null || items.Length <= 1)
+            if (items == null || items.Count <= 1)
                 return;
 
             Queue<int[]> stack = new Queue<int[]>();
             int startIndex = 0;
-            int endIndex = items.Length - 1;
+            int endIndex = items.Count - 1;
             stack.Enqueue(new int[] { startIndex, endIndex });
 
             while (stack.Count > 0)
@@ -66,14 +67,80 @@ namespace ericmclachlan.Portfolio
             }
         }
 
-        private static void Swap(int[] items, int i, int j)
+        public static void RadixSort(IList<int> collection, int noOfBaskets)
+        {
+            // Create all the queues:
+            var queues = new Queue<string>[noOfBaskets];
+            for (int i = 0; i < noOfBaskets; i++)
+                queues[i] = new Queue<string>();
+
+            int maxValue = -1;
+            // Add all the items in the collection to a queue: (The 1st queue has been chosen arbitrarilly.)
+            // Perform validation of input at the same time.
+            for (int i = 0; i < collection.Count; i++)
+            {
+                //if (collection[i] < 0)
+                //    throw new NotImplementedException("Negative numbers are not supported by this Radix sort implementation.");
+                string text = collection[i].ToString();
+                if (text.Length > maxValue)
+                    maxValue = text.Length;
+                queues[0].Enqueue(text);
+            }
+
+            // Remember that all the items are in the first queue.
+            int[] itemsInQueue_old = new int[noOfBaskets];
+            itemsInQueue_old[0] = collection.Count;
+
+            // Start the iterative part, ...
+            for (int iteration = 0; iteration < maxValue; iteration++)
+            {
+                int[] itemsInQueue_new = new int[noOfBaskets];
+                // Go through all the queues:
+                for (int i = 0; i < queues.Length; i++)
+                {
+                    // Process all the items in this queue:
+                    // (Bear in mind that additional items may be placed in this queue as it is recycled for this iteration.)
+                    for (int j = 0; j < itemsInQueue_old[i]; j++)
+                    {
+                        string text = queues[i].Dequeue();
+                        int basket;
+                        if (text.Length <= iteration)
+                        {
+                            basket = 0;
+                        }
+                        else
+                        {
+                            char c = text[text.Length - 1 - iteration];
+                            basket = c - '0';
+                        }
+                        queues[basket].Enqueue(text);
+                        itemsInQueue_new[basket]++;
+                    }
+                }
+                itemsInQueue_old = itemsInQueue_new;
+            }
+
+            // Return the result:
+            int r_i = 0;
+            // For each queue in the collection of queues, ...
+            for (int i = 0; i < queues.Length; i++)
+            {
+                // Add the items to the final results.
+                while (queues[i].Count > 0)
+                {
+                    collection[r_i++] = int.Parse(queues[i].Dequeue());
+                }
+            }
+        }
+
+        private static void Swap(IList<int> items, int i, int j)
         {
             int mask = items[i] ^ items[j];
             items[i] ^= mask;
             items[j] ^= mask;
         }
 
-        private static void Swap<T>(T[] items, int i, int j)
+        private static void Swap<T>(IList<T> items, int i, int j)
         {
             T temp = items[i];
             items[i] = items[j];

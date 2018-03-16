@@ -30,17 +30,16 @@ So, for example, calling "CommandPlatform.exe help" will cause the HelpCommand.E
 
 The purpose of this project was to make it very easy to add new commands to the platform. To add a new command, simply add a new class (e.g. YourCommand) that inherits from the Command class. Be sure to set the CommandName property to something like "Your_Command_Name". Then, calling "CommandPlatform.exe Your_Command_Name" will invoke YourCommand.ExecuteCommand(...). You can define parameters for the command, which are validated before control is passed to the ExecuteCommand(...) method by marking properties of YourCommand with the CommandParameterAttribute.
 
+The source code is written in C# and this package includes a simple console application and some libraries.
 
 # File Structure
 
-There are two main directories at present:
+At present, there are two main directories:
 1. source
 2. ericmclachlan.Portfolio.Tests 
 
 
 ## Directory: source 
-
-The source code, which can be found in the "source" subdirectory, is written in C# and defines a simple console application.
 
 This directory is very light with only the project file required by visual studio and two other files.
 - Program.cs, which starts up the command platform and delegates to the invoked commands.
