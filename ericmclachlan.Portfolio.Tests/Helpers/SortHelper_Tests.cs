@@ -9,7 +9,7 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void SortHelper_IntegersTuples_Odd_QuickSort_Test()
         {
-            var tuples = InputProvider.GetTuplesOfOddIntegers();
+            var tuples = InputProvider.GetIntegerTuples_Odd();
             foreach (var tuple in tuples)
             {
                 SortHelper.QuickSort(tuple);
@@ -23,7 +23,7 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void SortHelper_IntegersTuples_Even_QuickSort_Test()
         {
-            var tuples = InputProvider.GetTuplesOfEvenIntegers();
+            var tuples = InputProvider.GetIntegerTuples_Even();
             foreach (var tuple in tuples)
             {
                 SortHelper.QuickSort(tuple);
@@ -61,7 +61,7 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void SortHelper_IComparableTuples_Odd_QuickSort_Test()
         {
-            var tuples = InputProvider.GetTuplesOfOddIntegers();
+            var tuples = InputProvider.GetIntegerTuples_Odd();
             foreach (var tuple in tuples)
             {
                 TestComparable[] objects = new TestComparable[tuple.Count];
@@ -80,7 +80,7 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void SortHelper_IComparableTuples_Even_QuickSort_Test()
         {
-            var tuples = InputProvider.GetTuplesOfEvenIntegers();
+            var tuples = InputProvider.GetIntegerTuples_Even();
             foreach (var tuple in tuples)
             {
                 TestComparable[] objects = new TestComparable[tuple.Count];
@@ -110,7 +110,7 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void SortHelper_IntegersTuples_Odd_RadixSort_Test()
         {
-            var tuples = InputProvider.GetTuplesOfOddIntegers();
+            var tuples = InputProvider.GetIntegerTuples_Odd();
             foreach (var tuple in tuples)
             {
                 SortHelper.RadixSort(tuple, 10);
@@ -124,7 +124,7 @@ namespace ericmclachlan.Portfolio.Tests
         [TestMethod()]
         public void SortHelper_IntegersTuples_Even_RadixSort_Test()
         {
-            var tuples = InputProvider.GetTuplesOfEvenIntegers();
+            var tuples = InputProvider.GetIntegerTuples_Even();
             foreach (var tuple in tuples)
             {
                 SortHelper.RadixSort(tuple, 10);

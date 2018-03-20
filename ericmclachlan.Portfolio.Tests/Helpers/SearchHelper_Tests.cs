@@ -8,7 +8,7 @@ namespace ericmclachlan.Portfolio.Tests
     public class SearchHelper_Tests
     {
         [TestMethod()]
-        public void BinarySearch_Char_Test()
+        public void SearchHelper_FindInsertIndex_Char_Test()
         {
             // Make sure the algorithm works for collections of a variety of sizes.
             for (int size = 0; size < 11; size++)
@@ -17,7 +17,7 @@ namespace ericmclachlan.Portfolio.Tests
                 // Create a sorted list:
                 for (int i = 0; i < size; i++)
                 {
-                    alphabet.Add((char)('a' + i));
+                    alphabet.Add((char)('a' + (i % 26)));
                 }
                 for (int original_i = 0; original_i < alphabet.Count; original_i++)
                 {
@@ -26,7 +26,7 @@ namespace ericmclachlan.Portfolio.Tests
                     alphabet.RemoveAt(original_i);
 
                     // Test: Find the index at which to insert the removed item. (It should be the original index);
-                    int insert_i = SearchHelper.BinarySearch(alphabet, item);
+                    int insert_i = SearchHelper.FindInsertIndex(alphabet, item);
 
                     Assert.AreEqual(insert_i, original_i);
 
@@ -37,7 +37,7 @@ namespace ericmclachlan.Portfolio.Tests
         }
 
         [TestMethod()]
-        public void BinarySearch_Int32_Test()
+        public void SearchHelper_FindInsertIndex_Int32_Test()
         {
             // Make sure the algorithm works for collections of a variety of sizes.
             for (int size = 0; size < 11; size++)
@@ -55,7 +55,7 @@ namespace ericmclachlan.Portfolio.Tests
                     inputSet.RemoveAt(original_i);
 
                     // Test: Find the index at which to insert the removed item. (It should be the original index);
-                    int insert_i = SearchHelper.BinarySearch(inputSet, item);
+                    int insert_i = SearchHelper.FindInsertIndex(inputSet, item);
 
                     Assert.AreEqual(insert_i, original_i);
 
@@ -66,7 +66,7 @@ namespace ericmclachlan.Portfolio.Tests
         }
 
         [TestMethod()]
-        public void BinarySearch_Comparable_Test()
+        public void SearchHelper_FindInsertIndex_Comparable_Test()
         {
             // Make sure the algorithm works for collections of a variety of sizes.
             for (int size = 0; size < 11; size++)
@@ -84,7 +84,7 @@ namespace ericmclachlan.Portfolio.Tests
                     inputSet.RemoveAt(original_i);
 
                     // Test: Find the index at which to insert the removed item. (It should be the original index);
-                    int insert_i = SearchHelper.BinarySearch(inputSet, item);
+                    int insert_i = SearchHelper.FindInsertIndex(inputSet, item);
 
                     Assert.AreEqual(insert_i, original_i);
 

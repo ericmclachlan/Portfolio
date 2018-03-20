@@ -16,24 +16,22 @@ namespace ericmclachlan.Portfolio.Core
         /// If <c>input</c> doesn't exist, the position at which <c>input</c> would be inserted is returned instead.
         /// </para>
         /// </returns>
-        public static int BinarySearch<T>(this IList<T> collection, T input)
+        public static int FindInsertIndex<T>(this IList<T> collection, T input)
             where T : IComparable
         {
-            // Delegate the work to the private method.
-            return BinarySearch_Recurse(collection, input, 0, collection.Count - 1);
-        }
+            int startIndex = 0;
+            int endIndex = collection.Count - 1;
+            while (true)
+            {
+                if (startIndex > endIndex)
+                    return startIndex;
 
-        private static int BinarySearch_Recurse<T>(IList<T> collection, T input, int startIndex, int endIndex)
-            where T : IComparable
-        {
-            if (startIndex > endIndex)
-                return startIndex;
-
-            int midpoint = startIndex + ((endIndex - startIndex) / 2);
-            if (input.CompareTo(collection[midpoint]) > 0)
-                return BinarySearch_Recurse(collection, input, midpoint + 1, endIndex);
-            else
-                return BinarySearch_Recurse(collection, input, startIndex, midpoint - 1);
+                int midpoint = startIndex + ((endIndex - startIndex) / 2);
+                if (input.CompareTo(collection[midpoint]) > 0)
+                    startIndex = midpoint + 1;
+                else
+                    endIndex = midpoint - 1;
+            }
         }
 
 

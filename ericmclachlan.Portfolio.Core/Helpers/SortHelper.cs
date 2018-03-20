@@ -5,7 +5,9 @@ namespace ericmclachlan.Portfolio.Core
 {
     public static class SortHelper
     {
-        /// <summary>Performs an in-place sort of the specified <c>items</c>.</summary>
+        #region QuickSort
+
+        /// <summary>Performs an in-place sort of the specified <c>items</c> in O(n log n).</summary>
         public static void QuickSort<T>(IList<T> items)
             where T : IComparable
         {
@@ -29,11 +31,7 @@ namespace ericmclachlan.Portfolio.Core
                 // The pivot element is selected to be the last element in the range.
                 int pivotIndex = endIndex;
                 int i = startIndex;
-
-                //Debug.Assert(i >= 0);
-                //Debug.Assert(endIndex < items.Length);
-                //Debug.Assert(startIndex != endIndex);
-
+                
                 while (pivotIndex >= startIndex && i <= pivotIndex && endIndex - i >= 1)
                 {
                     if (items[i].CompareTo(items[pivotIndex]) <= 0)
@@ -42,93 +40,22 @@ namespace ericmclachlan.Portfolio.Core
                         continue;
                     }
                     // Example: 5 (index: i) is bigger than 4 (the pivot (index: p)).
-                    // e.g. | i |   | p | <- Indices
-                    //      | 5 | ? |*4*| <- Values
+                    // (Notation: The index surrounded by asterisks (*i*) is the pivot element.)
+                    // e.g. | 5 | ? |*4*|
                     // Temporarilly swap the pivot with the larger item (value: 5).
                     Swap(items, i, pivotIndex);
-                    // e.g. | i |   | p | <- Indices
-                    //      |*4*| ? | 5 | <- Values
+                    // e.g. | 4 | ? |*5*|
                     // Now, swap the pivot item with the item before the original pivot index.
-                    // e.g. | i |   | p | <- Indices
-                    //      | ? |*4*| 5 | <- Values
+                    // e.g. | ? |*4*| 5 |
                     Swap(items, i, --pivotIndex);
                 }
+
                 // We can assume that the items before the pivot are less than the pivot and
                 // the items after the pivot are greater than the pivot.
                 if (pivotIndex - startIndex > 1)
-                {
                     stack.Enqueue(new int[] { startIndex, pivotIndex - 1 });
-                }
                 if (endIndex - pivotIndex > 1)
-                {
                     stack.Enqueue(new int[] { pivotIndex + 1, endIndex });
-                }
-            }
-        }
-
-        public static void RadixSort(IList<int> collection, int noOfBaskets)
-        {
-            // Create all the queues:
-            var queues = new Queue<string>[noOfBaskets];
-            for (int i = 0; i < noOfBaskets; i++)
-                queues[i] = new Queue<string>();
-
-            int maxValue = -1;
-            // Add all the items in the collection to a queue: (The 1st queue has been chosen arbitrarilly.)
-            // Perform validation of input at the same time.
-            for (int i = 0; i < collection.Count; i++)
-            {
-                //if (collection[i] < 0)
-                //    throw new NotImplementedException("Negative numbers are not supported by this Radix sort implementation.");
-                string text = collection[i].ToString();
-                if (text.Length > maxValue)
-                    maxValue = text.Length;
-                queues[0].Enqueue(text);
-            }
-
-            // Remember that all the items are in the first queue.
-            int[] itemsInQueue_old = new int[noOfBaskets];
-            itemsInQueue_old[0] = collection.Count;
-
-            // Start the iterative part, ...
-            for (int iteration = 0; iteration < maxValue; iteration++)
-            {
-                int[] itemsInQueue_new = new int[noOfBaskets];
-                // Go through all the queues:
-                for (int i = 0; i < queues.Length; i++)
-                {
-                    // Process all the items in this queue:
-                    // (Bear in mind that additional items may be placed in this queue as it is recycled for this iteration.)
-                    for (int j = 0; j < itemsInQueue_old[i]; j++)
-                    {
-                        string text = queues[i].Dequeue();
-                        int basket;
-                        if (text.Length <= iteration)
-                        {
-                            basket = 0;
-                        }
-                        else
-                        {
-                            char c = text[text.Length - 1 - iteration];
-                            basket = c - '0';
-                        }
-                        queues[basket].Enqueue(text);
-                        itemsInQueue_new[basket]++;
-                    }
-                }
-                itemsInQueue_old = itemsInQueue_new;
-            }
-
-            // Return the result:
-            int r_i = 0;
-            // For each queue in the collection of queues, ...
-            for (int i = 0; i < queues.Length; i++)
-            {
-                // Add the items to the final results.
-                while (queues[i].Count > 0)
-                {
-                    collection[r_i++] = int.Parse(queues[i].Dequeue());
-                }
             }
         }
 
@@ -145,5 +72,88 @@ namespace ericmclachlan.Portfolio.Core
             items[i] = items[j];
             items[j] = temp;
         }
+
+        #endregion
+
+
+        #region RadixSort
+
+        struct RadixNode
+        {
+            public int OriginalValue;
+            public int RemainingValue;
+
+            public RadixNode(int value)
+            {
+                OriginalValue = value;
+                RemainingValue = value;
+            }
+        }
+
+        /// <summary>
+        /// Performs a sort of the specified <c>collection</c> in O(n).
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="noOfBaskets">Indicates how many baskets should be used for partitioning the items in the collection.</param>
+        public static void RadixSort(IList<int> collection, int noOfBaskets)
+        {
+            // Create the queues that will be used for storing the partitioned data:
+            var queues = new Queue<RadixNode>[noOfBaskets];
+            for (int i = 0; i < noOfBaskets; i++)
+                queues[i] = new Queue<RadixNode>();
+
+            // Add all the items in the collection to a queue: (The 1st queue has been chosen arbitrarilly.)
+            // Perform validation of input at the same time.
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (collection[i] < 0)
+                    throw new NotImplementedException("Negative numbers are not supported by this Radix sort implementation.");
+                string text = collection[i].ToString();
+                queues[0].Enqueue(new RadixNode(collection[i]));
+            }
+
+            // Remember that all the items are in the first queue.
+            int[] itemsInQueue_old = new int[noOfBaskets];
+            itemsInQueue_old[0] = collection.Count;
+
+            // Start the iterative part, ...
+            bool isContinuing = true;
+            while (isContinuing)
+            {
+                isContinuing = false;
+                int[] itemsInQueue_new = new int[noOfBaskets];
+                // Go through all the queues:
+                for (int i = 0; i < queues.Length; i++)
+                {
+                    // Process all the items in this queue:
+                    // (Bear in mind that additional items may be placed in this queue as it is recycled for this iteration.)
+                    for (int j = 0; j < itemsInQueue_old[i]; j++)
+                    {
+                        RadixNode node = queues[i].Dequeue();
+                        int basket = node.RemainingValue % noOfBaskets;
+                        node.RemainingValue = node.RemainingValue / noOfBaskets;
+                        if (node.RemainingValue != 0)
+                            isContinuing = true;
+                        queues[basket].Enqueue(node);
+                        itemsInQueue_new[basket]++;
+                    }
+                }
+                itemsInQueue_old = itemsInQueue_new;
+            }
+
+            // Return the result:
+            int r_i = 0;
+            // For each queue in the collection of queues, ...
+            for (int i = 0; i < queues.Length; i++)
+            {
+                // Add the items to the final results.
+                while (queues[i].Count > 0)
+                {
+                    collection[r_i++] = queues[i].Dequeue().OriginalValue;
+                }
+            }
+        }
+
+        #endregion
     }
 }

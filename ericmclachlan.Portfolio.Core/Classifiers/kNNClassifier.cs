@@ -81,7 +81,7 @@ namespace ericmclachlan.Portfolio.Core
                 else if (nearestNeighbors.Count < K || distance < nearestNeighbors[nearestNeighbors.Count - 1].Value)
                 {
                     var newNeighbor = new IdValuePair<double>(v_i, distance);
-                    int insert_b = SearchHelper.BinarySearch(nearestNeighbors, newNeighbor);
+                    int insert_b = SearchHelper.FindInsertIndex(nearestNeighbors, newNeighbor);
                     if (insert_b <= K)
                     {
                         nearestNeighbors.Insert(insert_b, newNeighbor);
